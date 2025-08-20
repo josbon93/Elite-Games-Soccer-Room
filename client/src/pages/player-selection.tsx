@@ -22,19 +22,8 @@ export default function PlayerSelection() {
   
   const [selectedCount, setSelectedCount] = useState(0);
 
-  // Parse URL params
-  const urlParts = location.split('?');
-  const queryString = urlParts.length > 1 ? urlParts[1] : '';
-  const urlParams = new URLSearchParams(queryString);
-  const modeFromUrl = urlParams.get('mode') as 'individual' | 'team' | null;
-  
-  console.log('Current location:', location);
-  console.log('Query string:', queryString);
-  console.log('Parsed mode from URL:', modeFromUrl);
-
   useEffect(() => {
     console.log('PlayerSelection useEffect - currentGame:', currentGame);
-    console.log('PlayerSelection useEffect - modeFromUrl:', modeFromUrl);
     console.log('PlayerSelection useEffect - currentMode:', currentMode);
     
     // Redirect to home if no game selected
@@ -43,13 +32,7 @@ export default function PlayerSelection() {
       setLocation('/');
       return;
     }
-
-    // Set mode from URL if provided
-    if (modeFromUrl && modeFromUrl !== currentMode) {
-      console.log('Setting mode from URL:', modeFromUrl);
-      setCurrentMode(modeFromUrl);
-    }
-  }, [currentGame, modeFromUrl, currentMode, setCurrentMode, setLocation]);
+  }, [currentGame, currentMode, setLocation]);
 
   const createSessionMutation = useMutation({
     mutationFn: async (sessionData: InsertGameSession) => {
@@ -112,25 +95,10 @@ export default function PlayerSelection() {
     return null; // Will redirect to home in useEffect
   }
 
-  if (!currentMode && modeFromUrl) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-center">
-          <motion.div
-            className="inline-flex items-center space-x-3 text-elite-gold"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <i className="fas fa-spinner fa-spin text-2xl"></i>
-            <span className="text-xl font-semibold">Loading...</span>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
-
+  // Redirect to game mode selection if no mode set (shouldn't happen for Team Relay Shootout)
   if (!currentMode) {
-    return null; // Invalid state
+    setLocation('/game-mode');
+    return null;
   }
 
   const isIndividual = currentMode === 'individual';

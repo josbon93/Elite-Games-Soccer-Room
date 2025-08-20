@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const { setCurrentGame } = useGameStore();
+  const { setCurrentGame, setCurrentMode } = useGameStore();
   const [modalGame, setModalGame] = useState<Game | null>(null);
 
   const { data: games, isLoading } = useQuery<Game[]>({
@@ -22,8 +22,9 @@ export default function Home() {
     setCurrentGame(game);
     // Handle Team Relay Shootout (teams only)
     if (game.type === 'team-relay-shootout') {
-      console.log('Navigating to team selection for Team Relay Shootout');
-      setLocation('/player-selection?mode=team');
+      console.log('Setting team mode and navigating to team selection');
+      setCurrentMode('team'); // Set mode directly in store
+      setLocation('/player-selection');
     } else {
       setLocation('/game-mode');
     }
