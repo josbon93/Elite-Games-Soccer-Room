@@ -34,13 +34,14 @@ export default function GameStart() {
   } = useGameStore();
 
   // Game state
-  const [gamePhase, setGamePhase] = useState<'setup' | 'playing' | 'finished'>('setup');
+  const [gamePhase, setGamePhase] = useState<'setup' | 'countdown' | 'playing' | 'finished'>('setup');
   const [currentRound, setCurrentRound] = useState(1);
   const [roundTimeLeft, setRoundTimeLeft] = useState(() => {
     // Team Relay Shootout uses 5 minutes for the single round
     return currentGame?.type === 'team-relay-shootout' ? 300 : 45;
   }); 
   const [totalTimeLeft, setTotalTimeLeft] = useState(300); // 5 minutes total
+  const [countdownValue, setCountdownValue] = useState(5); // 5 second countdown
   const [isRoundActive, setIsRoundActive] = useState(false);
   const [isTotalTimerActive, setIsTotalTimerActive] = useState(false);
   const [totalRounds, setTotalRounds] = useState(4);
@@ -57,6 +58,7 @@ export default function GameStart() {
 
   const roundTimerRef = useRef<NodeJS.Timeout | null>(null);
   const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Scoring grids based on game type
   const getScoringGrid = (): (number | string)[][] => {
@@ -68,15 +70,33 @@ export default function GameStart() {
         [8, 'X', 'X', 'X', 9]
       ];
     } else if (currentGame?.type === 'team-relay-shootout') {
-      // Team Relay Shootout: color-coded team zones
+      // Team Relay Shootout: randomized color-coded team zones
       const teamColors = ['R', 'B', 'G', 'Y']; // Red, Blue, Green, Yellow
-      const assignments = [
-        ['R', 'R', 'R', 'B', 'B'],
-        ['B', 'Y', 'Y', 'Y', 'G'],
-        ['G', 'G', '', '', '']
+      const activeTeamColors = teamColors.slice(0, currentTeamCount);
+      
+      // Create 15 positions (3x5 grid)
+      const positions = Array(15).fill('');
+      
+      // Assign 3 zones per team randomly
+      const availablePositions = Array.from({ length: 15 }, (_, i) => i);
+      
+      activeTeamColors.forEach(color => {
+        // Assign 3 random positions to each team
+        for (let i = 0; i < 3; i++) {
+          if (availablePositions.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availablePositions.length);
+            const position = availablePositions.splice(randomIndex, 1)[0];
+            positions[position] = color;
+          }
+        }
+      });
+      
+      // Convert to 3x5 grid format
+      return [
+        positions.slice(0, 5),
+        positions.slice(5, 10),
+        positions.slice(10, 15)
       ];
-      // Fill remaining spots based on team count
-      return assignments;
     } else {
       // Soccer Skeeball: original scoring values
       return [
@@ -210,6 +230,25 @@ export default function GameStart() {
     };
   }, [isTotalTimerActive, totalTimeLeft]);
 
+  // Countdown timer effect for Team Relay Shootout
+  useEffect(() => {
+    if (gamePhase === 'countdown' && countdownValue > 0) {
+      countdownTimerRef.current = setTimeout(() => {
+        setCountdownValue(prev => prev - 1);
+      }, 1000);
+    } else if (gamePhase === 'countdown' && countdownValue === 0) {
+      // Start the actual game after countdown
+      setGamePhase('playing');
+      startRoundTimer();
+    }
+
+    return () => {
+      if (countdownTimerRef.current) {
+        clearTimeout(countdownTimerRef.current);
+      }
+    };
+  }, [gamePhase, countdownValue]);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -217,8 +256,14 @@ export default function GameStart() {
   };
 
   const startGame = () => {
-    setGamePhase('playing');
-    // Don't start total timer here - wait for first round to start
+    // For Team Relay Shootout, start with countdown
+    if (currentGame?.type === 'team-relay-shootout') {
+      setGamePhase('countdown');
+      setCountdownValue(5);
+    } else {
+      setGamePhase('playing');
+      // Don't start total timer here - wait for first round to start
+    }
   };
 
   const startRoundTimer = () => {
@@ -434,6 +479,61 @@ export default function GameStart() {
                   ))
               }
             </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gamePhase === 'countdown') {
+    return (
+      <div className="min-h-screen p-4 bg-black flex items-center justify-center">
+        <div className="text-center">
+          <motion.h1 
+            className="text-6xl font-bold text-elite-gold mb-8"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            Get Ready!
+          </motion.h1>
+          
+          <motion.div
+            key={countdownValue}
+            className="text-9xl font-bold text-white mb-8"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {countdownValue}
+          </motion.div>
+          
+          <motion.p
+            className="text-2xl text-gray-300"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Teams will rotate shooting at their assigned color zones!
+          </motion.p>
+          
+          {/* Display team order */}
+          <motion.div
+            className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            {teamScores.map((team, index) => (
+              <Card key={team.teamId} className="bg-gray-800 border-gray-600">
+                <CardContent className="p-4 text-center">
+                  <div className={`w-8 h-8 rounded-full mx-auto mb-2 bg-${team.teamColor}-500`}></div>
+                  <div className="text-elite-gold font-bold">{team.teamName}</div>
+                  <div className="text-gray-300">Shooting Order: {index + 1}</div>
+                </CardContent>
+              </Card>
+            ))}
           </motion.div>
         </div>
       </div>
