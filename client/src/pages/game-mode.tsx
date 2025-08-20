@@ -17,11 +17,15 @@ export default function GameMode() {
 
   const handleSelectMode = (mode: 'individual' | 'team') => {
     setCurrentMode(mode);
-    setLocation(`/player-selection?mode=${mode}`);
+    if (mode === 'team') {
+      setLocation('/team-assignment');
+    } else {
+      setLocation('/player-selection');
+    }
   };
 
   const handleGoBack = () => {
-    setLocation('/');
+    setLocation('/player-count');
   };
 
   if (!currentGame) return null;

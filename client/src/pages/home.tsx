@@ -27,7 +27,7 @@ export default function Home() {
       setCurrentMode('team'); // Set mode directly in store
       setLocation('/player-selection');
     } else {
-      setLocation('/game-mode');
+      setLocation('/player-count');
     }
   };
 
