@@ -39,6 +39,8 @@ export default function GameStart() {
   const [totalTimeLeft, setTotalTimeLeft] = useState(300); // 5 minutes total
   const [isRoundActive, setIsRoundActive] = useState(false);
   const [isTotalTimerActive, setIsTotalTimerActive] = useState(false);
+  const [totalRounds, setTotalRounds] = useState(4);
+  const [activeParticipants, setActiveParticipants] = useState<number[]>([]);
   
   // Score state
   const [playerScores, setPlayerScores] = useState<PlayerScore[]>([]);
@@ -55,6 +57,40 @@ export default function GameStart() {
     [15, 10, 10, 10, 15]
   ];
 
+  // Calculate rounds and participants structure
+  const calculateGameStructure = () => {
+    const participantCount = currentMode === 'individual' ? currentPlayerCount : currentTeamCount;
+    
+    let rounds = 0;
+    let participantsPerRound: number[][] = [];
+    
+    if (participantCount <= 4) {
+      // 2 players = 2 rounds, 3 players = 3 rounds, 4 players = 4 rounds
+      rounds = participantCount;
+      participantsPerRound = Array.from({ length: rounds }, (_, i) => [i + 1]);
+    } else if (participantCount <= 6) {
+      // 5-6 players = 3 rounds, 2 players per round
+      rounds = 3;
+      const playersPerRound = Math.ceil(participantCount / rounds);
+      for (let i = 0; i < rounds; i++) {
+        const start = i * playersPerRound + 1;
+        const end = Math.min((i + 1) * playersPerRound, participantCount);
+        participantsPerRound.push(Array.from({ length: end - start + 1 }, (_, j) => start + j));
+      }
+    } else {
+      // 7-8 players = 4 rounds, 2 players per round
+      rounds = 4;
+      const playersPerRound = Math.ceil(participantCount / rounds);
+      for (let i = 0; i < rounds; i++) {
+        const start = i * playersPerRound + 1;
+        const end = Math.min((i + 1) * playersPerRound, participantCount);
+        participantsPerRound.push(Array.from({ length: end - start + 1 }, (_, j) => start + j));
+      }
+    }
+    
+    return { rounds, participantsPerRound };
+  };
+
   useEffect(() => {
     // Redirect to home if no session
     if (!currentSession || !currentGame) {
@@ -62,12 +98,20 @@ export default function GameStart() {
       return;
     }
 
+    const participantCount = currentMode === 'individual' ? currentPlayerCount : currentTeamCount;
+    const { rounds, participantsPerRound } = calculateGameStructure();
+    
+    setTotalRounds(rounds);
+    if (participantsPerRound.length > 0) {
+      setActiveParticipants(participantsPerRound[0]); // Set first round participants
+    }
+
     // Initialize scores based on mode
     if (currentMode === 'individual' && currentPlayerCount > 0) {
       const initialPlayers: PlayerScore[] = Array.from({ length: currentPlayerCount }, (_, index) => ({
         playerId: index + 1,
         playerName: `Player ${index + 1}`,
-        scores: [0, 0, 0, 0],
+        scores: new Array(rounds).fill(0),
         totalScore: 0
       }));
       setPlayerScores(initialPlayers);
@@ -78,7 +122,7 @@ export default function GameStart() {
         teamId: index + 1,
         teamName: teamNames[index],
         teamColor: teamColors[index],
-        scores: [0, 0, 0, 0],
+        scores: new Array(rounds).fill(0),
         totalScore: 0
       }));
       setTeamScores(initialTeams);
@@ -94,11 +138,16 @@ export default function GameStart() {
     } else if (isRoundActive && roundTimeLeft === 0) {
       // Round finished
       setIsRoundActive(false);
-      if (currentRound < 4) {
+      if (currentRound < totalRounds) {
         // Auto-advance to next round after 2 seconds
         setTimeout(() => {
+          const { participantsPerRound } = calculateGameStructure();
           setCurrentRound(prev => prev + 1);
           setRoundTimeLeft(45);
+          // Set active participants for next round
+          if (participantsPerRound[currentRound]) {
+            setActiveParticipants(participantsPerRound[currentRound]);
+          }
         }, 2000);
       } else {
         // Game finished
@@ -110,7 +159,7 @@ export default function GameStart() {
     return () => {
       if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
     };
-  }, [isRoundActive, roundTimeLeft, currentRound]);
+  }, [isRoundActive, roundTimeLeft, currentRound, totalRounds]);
 
   useEffect(() => {
     if (isTotalTimerActive && totalTimeLeft > 0) {
@@ -209,7 +258,7 @@ export default function GameStart() {
             <p className="text-gray-300 text-xl mb-6">
               {currentMode === 'individual' 
                 ? `${currentPlayerCount} Players` 
-                : `${currentTeamCount} Teams`} - 4 Rounds of 45 Seconds Each
+                : `${currentTeamCount} Teams`} - {totalRounds} Rounds of 45 Seconds Each
             </p>
             
             <Button
@@ -300,7 +349,7 @@ export default function GameStart() {
             </div>
             
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-elite-gold">Round {currentRound}/4</h1>
+              <h1 className="text-3xl font-bold text-elite-gold">Round {currentRound}/{totalRounds}</h1>
               <div className="text-gray-300">Soccer Skeeball</div>
             </div>
             
@@ -372,57 +421,86 @@ export default function GameStart() {
                 Score Entry - Round {currentRound}
               </h2>
               
+              {/* Show active participants for this round */}
+              <div className="text-center mb-4">
+                <div className="text-gray-300 text-sm mb-2">
+                  Playing this round:
+                </div>
+                <div className="flex justify-center gap-2 flex-wrap">
+                  {currentMode === 'individual' 
+                    ? activeParticipants.map(playerId => (
+                        <span key={playerId} className="bg-elite-gold text-black px-3 py-1 rounded-full text-sm font-bold">
+                          Player {playerId}
+                        </span>
+                      ))
+                    : activeParticipants.map(teamId => {
+                        const team = teamScores.find(t => t.teamId === teamId);
+                        return team ? (
+                          <span key={teamId} className="bg-elite-gold text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                            <div className={`w-3 h-3 rounded-full bg-${team.teamColor}-500`}></div>
+                            {team.teamName}
+                          </span>
+                        ) : null;
+                      })
+                  }
+                </div>
+              </div>
+              
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {currentMode === 'individual' 
-                  ? playerScores.map(player => (
-                      <Card key={player.playerId} className="bg-gray-800 border-gray-600">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-elite-gold font-bold text-lg">{player.playerName}</div>
-                              <div className="text-gray-300">Total: {player.totalScore} pts</div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-white">Round {currentRound}:</span>
-                              <Input
-                                type="number"
-                                value={tempScores[`${player.playerId}-${currentRound}`] || ''}
-                                onChange={(e) => handleScoreInput(player.playerId, e.target.value)}
-                                className="w-20 text-center"
-                                placeholder="0"
-                              />
-                              <span className="text-gray-300">pts</span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  : teamScores.map(team => (
-                      <Card key={team.teamId} className="bg-gray-800 border-gray-600">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
+                  ? playerScores
+                      .filter(player => activeParticipants.includes(player.playerId))
+                      .map(player => (
+                        <Card key={player.playerId} className="bg-gray-800 border-gray-600">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
                               <div>
-                                <div className="text-elite-gold font-bold text-lg">{team.teamName}</div>
-                                <div className="text-gray-300">Total: {team.totalScore} pts</div>
+                                <div className="text-elite-gold font-bold text-lg">{player.playerName}</div>
+                                <div className="text-gray-300">Total: {player.totalScore} pts</div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-white">Round {currentRound}:</span>
+                                <Input
+                                  type="number"
+                                  value={tempScores[`${player.playerId}-${currentRound}`] || ''}
+                                  onChange={(e) => handleScoreInput(player.playerId, e.target.value)}
+                                  className="w-20 text-center"
+                                  placeholder="0"
+                                />
+                                <span className="text-gray-300">pts</span>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-white">Round {currentRound}:</span>
-                              <Input
-                                type="number"
-                                value={tempScores[`${team.teamId}-${currentRound}`] || ''}
-                                onChange={(e) => handleScoreInput(team.teamId, e.target.value)}
-                                className="w-20 text-center"
-                                placeholder="0"
-                              />
-                              <span className="text-gray-300">pts</span>
+                          </CardContent>
+                        </Card>
+                      ))
+                  : teamScores
+                      .filter(team => activeParticipants.includes(team.teamId))
+                      .map(team => (
+                        <Card key={team.teamId} className="bg-gray-800 border-gray-600">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
+                                <div>
+                                  <div className="text-elite-gold font-bold text-lg">{team.teamName}</div>
+                                  <div className="text-gray-300">Total: {team.totalScore} pts</div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-white">Round {currentRound}:</span>
+                                <Input
+                                  type="number"
+                                  value={tempScores[`${team.teamId}-${currentRound}`] || ''}
+                                  onChange={(e) => handleScoreInput(team.teamId, e.target.value)}
+                                  className="w-20 text-center"
+                                  placeholder="0"
+                                />
+                                <span className="text-gray-300">pts</span>
+                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
+                          </CardContent>
+                        </Card>
+                      ))
                 }
               </div>
 

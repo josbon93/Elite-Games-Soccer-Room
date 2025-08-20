@@ -44,6 +44,16 @@ Game sessions are managed through a structured flow:
 - **State Tracking**: Sessions track mode (individual/team), player counts, team configurations, and status
 - **Flow Control**: Multi-step process from game selection → mode selection → player configuration → game start
 
+### Game Logic Implementation
+Soccer Skeeball features a dynamic round system based on participant count:
+
+- **2-4 participants**: Each gets their own round (2-4 rounds total)
+- **5-6 participants**: 3 rounds with 2 participants per round
+- **7-8 participants**: 4 rounds with 2 participants per round
+- **Scoring System**: 15-zone grid with values from -10 to +50 points matching provided target layout
+- **Timer System**: 5-minute total game timer with 45-second round timers
+- **Score Tracking**: Real-time score entry and total calculation with final leaderboard
+
 ### Component Architecture
 The frontend follows a hierarchical component structure:
 
