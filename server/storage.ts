@@ -28,7 +28,7 @@ export class MemStorage implements IStorage {
       {
         name: "Soccer Skeeball",
         type: GAME_TYPES.SOCCER_SKEEBALL,
-        description: "Roll soccer balls up a ramp to score points in different target holes. Precision meets fun in this classic arcade experience!",
+        description: "Soccer meets skeeball, where you shoot 5 shots at goal to accumulate points, with the outside target zones worth the most points!",
         maxPlayers: 8,
         maxTeams: 4,
         teamsOnly: 0,
@@ -36,7 +36,7 @@ export class MemStorage implements IStorage {
       {
         name: "Elite Shooter",
         type: GAME_TYPES.ELITE_SHOOTER,
-        description: "Test your shooting accuracy with timed challenges. Hit targets, beat the clock, and show off your elite skills!",
+        description: "Test to see if you can score in as many outside target zones before the 45 second timer runs out!",
         maxPlayers: 8,
         maxTeams: 4,
         teamsOnly: 0,
@@ -44,7 +44,7 @@ export class MemStorage implements IStorage {
       {
         name: "Team Relay Shootout",
         type: GAME_TYPES.TEAM_RELAY_SHOOTOUT,
-        description: "Ultimate team competition! Work together in relay-style shooting challenges. Teamwork makes the dream work!",
+        description: "Break into 2-4 teams and take turns shooting at your team's 5 color target zones first before the other teams do!",
         maxPlayers: 0,
         maxTeams: 4,
         teamsOnly: 1,

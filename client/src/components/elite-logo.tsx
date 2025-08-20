@@ -17,13 +17,42 @@ export default function EliteLogo() {
             <i className="fas fa-leaf transform rotate-12"></i>
           </div>
           
-          {/* Camera Aperture Icon */}
+          {/* Soccer Goal with Ball */}
           <motion.div 
-            className="w-16 h-16 rounded-full border-4 border-elite-gold flex items-center justify-center"
-            whileHover={{ rotate: 180 }}
-            transition={{ duration: 0.5 }}
+            className="w-16 h-16 relative flex items-center justify-center"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.3 }}
           >
-            <i className="fas fa-camera text-elite-gold text-2xl"></i>
+            {/* Goal Posts */}
+            <div className="absolute inset-0 border-4 border-elite-gold border-b-0 rounded-t-lg">
+              {/* Goal Net Pattern */}
+              <div className="absolute inset-1 opacity-30">
+                <div className="grid grid-cols-4 grid-rows-3 h-full w-full">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div key={i} className="border border-elite-gold border-opacity-40"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Soccer Ball */}
+            <motion.div 
+              className="w-8 h-8 bg-white rounded-full relative z-10 flex items-center justify-center"
+              animate={{ y: [0, -2, 0] }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 2,
+                ease: "easeInOut" 
+              }}
+            >
+              {/* Soccer ball pattern */}
+              <div className="absolute inset-1">
+                <div className="w-2 h-2 bg-black rounded-full mx-auto"></div>
+                <div className="absolute top-0 left-1 w-1 h-1 bg-black rounded-full"></div>
+                <div className="absolute top-0 right-1 w-1 h-1 bg-black rounded-full"></div>
+                <div className="absolute bottom-0 left-1 w-1 h-1 bg-black rounded-full"></div>
+                <div className="absolute bottom-0 right-1 w-1 h-1 bg-black rounded-full"></div>
+              </div>
+            </motion.div>
           </motion.div>
           
           {/* Laurel Right */}
