@@ -65,10 +65,24 @@ export default function TeamAssignment() {
   });
 
   const assignPlayerToTeam = (playerId: number, teamId: number) => {
+    // Check if team already has 2 players
+    const playersInTeam = getPlayersInTeam(teamId);
+    if (playersInTeam.length >= 2) {
+      return; // Don't allow more than 2 players per team
+    }
+    
     setTeamAssignments(prev => ({
       ...prev,
       [playerId]: teamId
     }));
+  };
+
+  const resetTeamAssignments = () => {
+    const initialAssignments: TeamAssignment = {};
+    for (let i = 1; i <= currentPlayerCount; i++) {
+      initialAssignments[i] = 0; // 0 means unassigned
+    }
+    setTeamAssignments(initialAssignments);
   };
 
   const randomizeTeams = () => {
@@ -77,22 +91,21 @@ export default function TeamAssignment() {
     
     const newAssignments: TeamAssignment = {};
     
-    if (currentPlayerCount <= 4) {
-      // 2 teams: distribute evenly
-      shuffled.forEach((playerId, index) => {
-        newAssignments[playerId] = (index % 2) + 1;
-      });
-    } else if (currentPlayerCount <= 6) {
-      // 3 teams: distribute as evenly as possible
-      shuffled.forEach((playerId, index) => {
-        newAssignments[playerId] = (index % 3) + 1;
-      });
-    } else {
-      // 4 teams: distribute as evenly as possible
-      shuffled.forEach((playerId, index) => {
-        newAssignments[playerId] = (index % 4) + 1;
-      });
-    }
+    // Distribute players to teams, max 2 per team
+    let teamIndex = 0;
+    let playersInCurrentTeam = 0;
+    
+    shuffled.forEach((playerId) => {
+      if (playersInCurrentTeam >= 2) {
+        teamIndex++;
+        playersInCurrentTeam = 0;
+      }
+      
+      if (teamIndex < teamCount) {
+        newAssignments[playerId] = teamIndex + 1;
+        playersInCurrentTeam++;
+      }
+    });
     
     setTeamAssignments(newAssignments);
   };
@@ -169,6 +182,7 @@ export default function TeamAssignment() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="space-x-4"
           >
             <Button
               onClick={randomizeTeams}
@@ -177,6 +191,13 @@ export default function TeamAssignment() {
               <i className="fas fa-random mr-2"></i>
               Randomize Teams
             </Button>
+            <Button
+              onClick={resetTeamAssignments}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 mb-8"
+            >
+              <i className="fas fa-undo mr-2"></i>
+              Reset All
+            </Button>
           </motion.div>
         </div>
 
@@ -184,28 +205,39 @@ export default function TeamAssignment() {
           {Array.from({ length: teamCount }, (_, teamIndex) => {
             const teamId = teamIndex + 1;
             const playersInTeam = getPlayersInTeam(teamId);
-            const maxPlayersPerTeam = Math.ceil(currentPlayerCount / teamCount);
+            const isFull = playersInTeam.length >= 2;
             
             return (
               <motion.div
                 key={teamId}
-                className={`bg-gray-800 border-2 border-${teamColors[teamIndex]}-500 rounded-xl p-6`}
+                className={`bg-gray-800 border-2 border-${teamColors[teamIndex]}-500 rounded-xl p-6 ${isFull ? 'ring-2 ring-green-400' : ''}`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: teamIndex * 0.1 }}
               >
                 <div className="text-center mb-4">
                   <div className={`w-16 h-16 mx-auto mb-3 bg-${teamColors[teamIndex]}-500 rounded-full flex items-center justify-center`}>
-                    <i className="fas fa-users text-white text-xl"></i>
+                    <i className={`fas ${isFull ? 'fa-check' : 'fa-users'} text-white text-xl`}></i>
                   </div>
                   <h3 className="text-xl font-bold text-white">{teamNames[teamIndex]}</h3>
-                  <p className="text-gray-400 text-sm">{playersInTeam.length}/{maxPlayersPerTeam} players</p>
+                  <p className="text-gray-400 text-sm">{playersInTeam.length}/2 players {isFull ? '(Full)' : ''}</p>
                 </div>
                 
                 <div className="space-y-2 min-h-[120px]">
                   {playersInTeam.map(playerId => (
-                    <div key={playerId} className="bg-gray-700 rounded-lg p-2 text-center">
+                    <button
+                      key={playerId}
+                      onClick={() => assignPlayerToTeam(playerId, 0)} // Unassign
+                      className="w-full bg-gray-700 hover:bg-gray-600 rounded-lg p-2 text-center transition-colors"
+                      title="Click to unassign"
+                    >
                       <span className="text-white font-semibold">Player {playerId}</span>
+                    </button>
+                  ))}
+                  {/* Show empty slots */}
+                  {Array.from({ length: 2 - playersInTeam.length }, (_, index) => (
+                    <div key={`empty-${index}`} className="bg-gray-700 opacity-50 rounded-lg p-2 text-center border-2 border-dashed border-gray-500">
+                      <span className="text-gray-400 font-semibold">Empty Slot</span>
                     </div>
                   ))}
                 </div>
@@ -229,14 +261,22 @@ export default function TeamAssignment() {
                 >
                   <div className="text-white font-bold mb-2">Player {playerId}</div>
                   <div className="grid grid-cols-2 gap-1">
-                    {teamColors.slice(0, teamCount).map((color, teamIndex) => (
-                      <button
-                        key={teamIndex}
-                        onClick={() => assignPlayerToTeam(playerId, teamIndex + 1)}
-                        className={`w-6 h-6 rounded-full bg-${color}-500 hover:bg-${color}-400 transition-colors`}
-                        title={`Assign to ${teamNames[teamIndex]}`}
-                      />
-                    ))}
+                    {teamColors.slice(0, teamCount).map((color, teamIndex) => {
+                      const teamIsFull = getPlayersInTeam(teamIndex + 1).length >= 2;
+                      return (
+                        <button
+                          key={teamIndex}
+                          onClick={() => assignPlayerToTeam(playerId, teamIndex + 1)}
+                          disabled={teamIsFull}
+                          className={`w-6 h-6 rounded-full transition-colors ${
+                            teamIsFull 
+                              ? `bg-${color}-300 opacity-50 cursor-not-allowed` 
+                              : `bg-${color}-500 hover:bg-${color}-400`
+                          }`}
+                          title={teamIsFull ? `${teamNames[teamIndex]} is full` : `Assign to ${teamNames[teamIndex]}`}
+                        />
+                      );
+                    })}
                   </div>
                 </motion.div>
               ))}

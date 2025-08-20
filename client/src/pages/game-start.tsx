@@ -493,11 +493,19 @@ export default function GameStart() {
                       ))
                     : activeParticipants.map(teamId => {
                         const team = teamScores.find(t => t.teamId === teamId);
+                        const sessionTeam = currentSession?.teams?.find((t: any) => t.id === teamId);
                         return team ? (
-                          <span key={teamId} className="bg-elite-gold text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
-                            <div className={`w-3 h-3 rounded-full bg-${team.teamColor}-500`}></div>
-                            {team.teamName}
-                          </span>
+                          <div key={teamId} className="bg-elite-gold text-black px-3 py-2 rounded-lg text-sm font-bold">
+                            <div className="flex items-center gap-1 mb-1">
+                              <div className={`w-3 h-3 rounded-full bg-${team.teamColor}-500`}></div>
+                              {team.teamName}
+                            </div>
+                            {sessionTeam?.players && sessionTeam.players.length > 0 && (
+                              <div className="text-xs opacity-80">
+                                Players: {sessionTeam.players.map((playerId: any) => `Player ${playerId}`).join(', ')}
+                              </div>
+                            )}
+                          </div>
                         ) : null;
                       })
                   }
