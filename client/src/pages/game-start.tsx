@@ -567,6 +567,14 @@ export default function GameStart() {
                                 <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
                                 <div>
                                   <div className="text-elite-gold font-bold text-lg">{team.teamName}</div>
+                                  <div className="text-gray-300 text-sm">
+                                    {(() => {
+                                      const sessionTeam = (currentSession?.teams as any[])?.find((t: any) => t.id === team.teamId);
+                                      return sessionTeam?.players && sessionTeam.players.length > 0 
+                                        ? `Players: ${sessionTeam.players.map((playerId: any) => `Player ${playerId}`).join(', ')}`
+                                        : '';
+                                    })()}
+                                  </div>
                                   <div className="text-gray-300">Total: {team.totalScore} pts</div>
                                 </div>
                               </div>
@@ -647,11 +655,19 @@ export default function GameStart() {
                             } else {
                               return nextRoundParticipants.map(teamId => {
                                 const team = teamScores.find(t => t.teamId === teamId);
+                                const sessionTeam = (currentSession?.teams as any[])?.find((t: any) => t.id === teamId);
                                 return team ? (
-                                  <span key={teamId} className="bg-elite-gold text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
-                                    <div className={`w-3 h-3 rounded-full bg-${team.teamColor}-500`}></div>
-                                    {team.teamName}
-                                  </span>
+                                  <div key={teamId} className="bg-elite-gold text-black px-3 py-2 rounded-lg text-sm font-bold">
+                                    <div className="flex items-center gap-1 mb-1">
+                                      <div className={`w-3 h-3 rounded-full bg-${team.teamColor}-500`}></div>
+                                      {team.teamName}
+                                    </div>
+                                    {sessionTeam?.players && sessionTeam.players.length > 0 && (
+                                      <div className="text-xs opacity-80">
+                                        {sessionTeam.players.map((playerId: any) => `Player ${playerId}`).join(', ')}
+                                      </div>
+                                    )}
+                                  </div>
                                 ) : null;
                               });
                             }
@@ -804,7 +820,17 @@ export default function GameStart() {
                               {resultLabel}
                             </div>
                             <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
-                            <div className="text-xl font-bold text-white">{team.teamName}</div>
+                            <div>
+                              <div className="text-xl font-bold text-white">{team.teamName}</div>
+                              <div className="text-sm text-gray-400">
+                                {(() => {
+                                  const sessionTeam = (currentSession?.teams as any[])?.find((t: any) => t.id === team.teamId);
+                                  return sessionTeam?.players && sessionTeam.players.length > 0 
+                                    ? `Players: ${sessionTeam.players.map((playerId: any) => `Player ${playerId}`).join(', ')}`
+                                    : '';
+                                })()}
+                              </div>
+                            </div>
                           </div>
                           <div className="text-2xl font-bold text-elite-gold">{team.totalScore} pts</div>
                         </div>
