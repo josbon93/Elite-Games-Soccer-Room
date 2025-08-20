@@ -23,9 +23,9 @@ export default function Home() {
     setCurrentGame(game);
     // Handle Team Relay Shootout (teams only)
     if (game.type === 'team-relay-shootout') {
-      console.log('Setting team mode and navigating to team assignment');
+      console.log('Setting team mode and navigating to player count');
       setCurrentMode('team'); // Set mode directly in store
-      setLocation('/team-assignment');
+      setLocation('/player-count');
     } else {
       setLocation('/player-count');
     }

@@ -19,7 +19,13 @@ export default function PlayerCount() {
   const handlePlayerCountSelect = (count: number) => {
     setSelectedCount(count);
     setCurrentPlayerCount(count);
-    setLocation('/game-mode');
+    
+    // Skip game mode selection for Team Relay Shootout (teams only)
+    if (currentGame?.type === 'team-relay-shootout') {
+      setLocation('/team-assignment');
+    } else {
+      setLocation('/game-mode');
+    }
   };
 
   const handleGoBack = () => {
