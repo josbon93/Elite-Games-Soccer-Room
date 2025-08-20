@@ -206,20 +206,29 @@ export default function TeamAssignment() {
             const teamId = teamIndex + 1;
             const playersInTeam = getPlayersInTeam(teamId);
             const isFull = playersInTeam.length >= 2;
+            const color = teamColors[teamIndex];
+            
+            // Define explicit color classes for better reliability
+            const colorClasses = {
+              red: { bg: 'bg-red-500', border: 'border-red-500', text: 'text-red-400' },
+              blue: { bg: 'bg-blue-500', border: 'border-blue-500', text: 'text-blue-400' },
+              green: { bg: 'bg-green-500', border: 'border-green-500', text: 'text-green-400' },
+              yellow: { bg: 'bg-yellow-500', border: 'border-yellow-500', text: 'text-yellow-400' }
+            }[color] || { bg: 'bg-gray-500', border: 'border-gray-500', text: 'text-gray-400' };
             
             return (
               <motion.div
                 key={teamId}
-                className={`bg-gray-800 border-2 border-${teamColors[teamIndex]}-500 rounded-xl p-6 ${isFull ? 'ring-2 ring-green-400' : ''}`}
+                className={`bg-gray-800 border-2 ${colorClasses.border} rounded-xl p-6 ${isFull ? 'ring-2 ring-green-400' : ''}`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: teamIndex * 0.1 }}
               >
                 <div className="text-center mb-4">
-                  <div className={`w-16 h-16 mx-auto mb-3 bg-${teamColors[teamIndex]}-500 rounded-full flex items-center justify-center`}>
+                  <div className={`w-16 h-16 mx-auto mb-3 ${colorClasses.bg} rounded-full flex items-center justify-center`}>
                     <i className={`fas ${isFull ? 'fa-check' : 'fa-users'} text-white text-xl`}></i>
                   </div>
-                  <h3 className="text-xl font-bold text-white">{teamNames[teamIndex]}</h3>
+                  <h3 className={`text-xl font-bold ${colorClasses.text}`}>{teamNames[teamIndex]}</h3>
                   <p className="text-gray-400 text-sm">{playersInTeam.length}/2 players {isFull ? '(Full)' : ''}</p>
                 </div>
                 
@@ -228,7 +237,7 @@ export default function TeamAssignment() {
                     <button
                       key={playerId}
                       onClick={() => assignPlayerToTeam(playerId, 0)} // Unassign
-                      className="w-full bg-gray-700 hover:bg-gray-600 rounded-lg p-2 text-center transition-colors"
+                      className={`w-full ${colorClasses.bg} bg-opacity-20 hover:bg-opacity-30 rounded-lg p-2 text-center transition-colors border border-${color}-500`}
                       title="Click to unassign"
                     >
                       <span className="text-white font-semibold">Player {playerId}</span>
@@ -236,7 +245,7 @@ export default function TeamAssignment() {
                   ))}
                   {/* Show empty slots */}
                   {Array.from({ length: 2 - playersInTeam.length }, (_, index) => (
-                    <div key={`empty-${index}`} className="bg-gray-700 opacity-50 rounded-lg p-2 text-center border-2 border-dashed border-gray-500">
+                    <div key={`empty-${index}`} className={`bg-gray-700 opacity-50 rounded-lg p-2 text-center border-2 border-dashed ${colorClasses.border}`}>
                       <span className="text-gray-400 font-semibold">Empty Slot</span>
                     </div>
                   ))}
@@ -255,26 +264,38 @@ export default function TeamAssignment() {
               .map(playerId => (
                 <motion.div
                   key={playerId}
-                  className="bg-gray-700 hover:bg-gray-600 rounded-xl p-4 text-center cursor-pointer group"
+                  className="bg-gray-700 hover:bg-gray-600 rounded-xl p-4 text-center cursor-pointer group border-2 border-gray-600"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <div className="text-white font-bold mb-2">Player {playerId}</div>
-                  <div className="grid grid-cols-2 gap-1">
+                  <div className="text-white font-bold mb-3">Player {playerId}</div>
+                  <div className="text-gray-300 text-xs mb-2">Choose team:</div>
+                  <div className="grid grid-cols-2 gap-2">
                     {teamColors.slice(0, teamCount).map((color, teamIndex) => {
                       const teamIsFull = getPlayersInTeam(teamIndex + 1).length >= 2;
+                      
+                      // Define explicit color classes for better reliability
+                      const colorClasses = {
+                        red: { bg: 'bg-red-500', hover: 'hover:bg-red-400', disabled: 'bg-red-300' },
+                        blue: { bg: 'bg-blue-500', hover: 'hover:bg-blue-400', disabled: 'bg-blue-300' },
+                        green: { bg: 'bg-green-500', hover: 'hover:bg-green-400', disabled: 'bg-green-300' },
+                        yellow: { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-400', disabled: 'bg-yellow-300' }
+                      }[color] || { bg: 'bg-gray-500', hover: 'hover:bg-gray-400', disabled: 'bg-gray-300' };
+                      
                       return (
                         <button
                           key={teamIndex}
                           onClick={() => assignPlayerToTeam(playerId, teamIndex + 1)}
                           disabled={teamIsFull}
-                          className={`w-6 h-6 rounded-full transition-colors ${
+                          className={`w-8 h-8 rounded-full transition-all flex items-center justify-center text-white text-xs font-bold ${
                             teamIsFull 
-                              ? `bg-${color}-300 opacity-50 cursor-not-allowed` 
-                              : `bg-${color}-500 hover:bg-${color}-400`
+                              ? `${colorClasses.disabled} opacity-50 cursor-not-allowed` 
+                              : `${colorClasses.bg} ${colorClasses.hover} transform hover:scale-110`
                           }`}
-                          title={teamIsFull ? `${teamNames[teamIndex]} is full` : `Assign to ${teamNames[teamIndex]}`}
-                        />
+                          title={teamIsFull ? `${teamNames[teamIndex]} is full (2/2)` : `Join ${teamNames[teamIndex]} (${getPlayersInTeam(teamIndex + 1).length}/2)`}
+                        >
+                          {teamIsFull ? '✕' : (getPlayersInTeam(teamIndex + 1).length + 1)}
+                        </button>
                       );
                     })}
                   </div>

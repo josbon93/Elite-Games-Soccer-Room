@@ -493,7 +493,7 @@ export default function GameStart() {
                       ))
                     : activeParticipants.map(teamId => {
                         const team = teamScores.find(t => t.teamId === teamId);
-                        const sessionTeam = currentSession?.teams?.find((t: any) => t.id === teamId);
+                        const sessionTeam = (currentSession?.teams as any[])?.find((t: any) => t.id === teamId);
                         return team ? (
                           <div key={teamId} className="bg-elite-gold text-black px-3 py-2 rounded-lg text-sm font-bold">
                             <div className="flex items-center gap-1 mb-1">
