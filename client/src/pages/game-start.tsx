@@ -608,7 +608,7 @@ export default function GameStart() {
                         className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3"
                       >
                         <i className="fas fa-play mr-2"></i>
-                        Start Round {currentRound + 1}
+                        Go to Next Round
                       </Button>
                     )}
                     {currentRound >= totalRounds && (
