@@ -390,9 +390,11 @@ export default function GameStart() {
               {currentGame.name}
             </h1>
             <p className="text-gray-300 text-xl mb-6">
-              {currentMode === 'individual' 
-                ? `${currentPlayerCount} Players` 
-                : `${currentTeamCount} Teams`} - {totalRounds} Rounds of 45 Seconds Each
+              {currentGame?.type === 'team-relay-shootout'
+                ? `${currentTeamCount} Teams - 1 Round of 5 Minute Showdown`
+                : currentMode === 'individual' 
+                  ? `${currentPlayerCount} Players - ${totalRounds} Rounds of 45 Seconds Each`
+                  : `${currentTeamCount} Teams - ${totalRounds} Rounds of 45 Seconds Each`}
             </p>
             
             <Button
