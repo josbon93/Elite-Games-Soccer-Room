@@ -29,7 +29,7 @@ const gameInstructions = {
     '🎯 <strong>Objective:</strong> Score the most points by shooting into your team\'s color zones and earn points when opponents score into your team\'s color zones.',
     '👥 <strong>Team Setup:</strong> 2-4 teams rotate taking shots with their team color balls at the colored target zones.',
     '⚽ <strong>How to Play:</strong> Players rotate from each team, shooting their team color balls at any colored target zones during the 5-minute game timer.',
-    '🎲 <strong>Scoring:</strong> Get 3 points for scoring in your team color zones, get 1 point when opponents accidentally score in your color zones.',
+    '🎲 <strong>Scoring:</strong> Earn 3 points for scoring in your team\'s color zones. Earn an extra 1 point each time an opponent scores into your team\'s color zones.',
     '🔄 <strong>Team Colors:</strong> Each team is assigned 3 colored target zones on the purple scoring grid - aim for your team colors!',
     '⏰ <strong>Time Limit:</strong> Single 5-minute game with all teams playing simultaneously.',
     '🏆 <strong>Winning:</strong> Team with the highest total score wins!'
