@@ -36,10 +36,7 @@ export default function GameCard({ game, onSelectGame, onShowInstructions, index
         <div className="flex flex-col space-y-3">
           <motion.button 
             className="bg-elite-gold text-black px-6 py-3 rounded-xl font-bold text-lg hover:bg-elite-gold-dark transition-colors duration-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              onShowInstructions(game);
-            }}
+            onClick={() => onShowInstructions(game)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -47,10 +44,7 @@ export default function GameCard({ game, onSelectGame, onShowInstructions, index
           </motion.button>
           <motion.button 
             className="bg-soccer-green text-white px-6 py-3 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors duration-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectGame(game);
-            }}
+            onClick={() => onSelectGame(game)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
