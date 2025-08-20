@@ -55,6 +55,9 @@ export default function GameStart() {
   const [playerScores, setPlayerScores] = useState<PlayerScore[]>([]);
   const [teamScores, setTeamScores] = useState<TeamScore[]>([]);
   const [tempScores, setTempScores] = useState<{ [key: string]: string }>({});
+  
+  // Scoring grid state - store once and don't regenerate
+  const [scoringGrid, setScoringGrid] = useState<(number | string)[][]>([]);
 
   const roundTimerRef = useRef<NodeJS.Timeout | null>(null);
   const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -107,7 +110,7 @@ export default function GameStart() {
     }
   };
 
-  const scoringGrid = getScoringGrid();
+
 
   // Calculate rounds and participants structure
   const calculateGameStructure = () => {
@@ -189,6 +192,13 @@ export default function GameStart() {
       setTeamScores(initialTeams);
     }
   }, [currentSession, currentGame, currentMode, currentPlayerCount, currentTeamCount, setLocation]);
+
+  // Initialize scoring grid once when component mounts
+  useEffect(() => {
+    if (currentGame) {
+      setScoringGrid(getScoringGrid());
+    }
+  }, [currentGame, currentTeamCount]); // Only regenerate when game or team count changes
 
   // Timer effects
   useEffect(() => {
