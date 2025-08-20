@@ -182,11 +182,18 @@ export default function GameStart() {
 
   const startGame = () => {
     setGamePhase('playing');
-    setIsTotalTimerActive(true);
+    // Don't start total timer here - wait for first round to start
   };
 
   const startRoundTimer = () => {
     setIsRoundActive(true);
+    setRoundTimeLeft(45);
+    setRoundComplete(false);
+    setScoresSubmitted(false);
+    // Start total timer only when first round begins
+    if (currentRound === 1 && !isTotalTimerActive) {
+      setIsTotalTimerActive(true);
+    }
   };
 
   const handleScoreInput = (playerId: number, value: string) => {
