@@ -685,36 +685,70 @@ export default function GameStart() {
               
               {currentMode === 'individual' ? (
                 <div className="space-y-4">
-                  {playerScores
-                    .sort((a, b) => b.totalScore - a.totalScore)
-                    .map((player, index) => (
-                      <div key={player.playerId} className="flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                          <div className={`text-2xl ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-400' : 'text-gray-500'}`}>
-                            #{index + 1}
+                  {(() => {
+                    const sortedPlayers = playerScores.sort((a, b) => b.totalScore - a.totalScore);
+                    let currentRank = 1;
+                    let previousScore = null;
+                    let playersAtSameRank = 0;
+
+                    return sortedPlayers.map((player, index) => {
+                      if (previousScore !== null && player.totalScore < previousScore) {
+                        currentRank += playersAtSameRank;
+                        playersAtSameRank = 1;
+                      } else if (previousScore === player.totalScore) {
+                        playersAtSameRank++;
+                      } else {
+                        playersAtSameRank = 1;
+                      }
+                      previousScore = player.totalScore;
+
+                      return (
+                        <div key={player.playerId} className="flex justify-between items-center">
+                          <div className="flex items-center space-x-4">
+                            <div className={`text-2xl ${currentRank === 1 ? 'text-yellow-400' : currentRank === 2 ? 'text-gray-300' : currentRank === 3 ? 'text-orange-400' : 'text-gray-500'}`}>
+                              #{currentRank}
+                            </div>
+                            <div className="text-xl font-bold text-white">{player.playerName}</div>
                           </div>
-                          <div className="text-xl font-bold text-white">{player.playerName}</div>
+                          <div className="text-2xl font-bold text-elite-gold">{player.totalScore} pts</div>
                         </div>
-                        <div className="text-2xl font-bold text-elite-gold">{player.totalScore} pts</div>
-                      </div>
-                    ))}
+                      );
+                    });
+                  })()}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {teamScores
-                    .sort((a, b) => b.totalScore - a.totalScore)
-                    .map((team, index) => (
-                      <div key={team.teamId} className="flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                          <div className={`text-2xl ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-400' : 'text-gray-500'}`}>
-                            #{index + 1}
+                  {(() => {
+                    const sortedTeams = teamScores.sort((a, b) => b.totalScore - a.totalScore);
+                    let currentRank = 1;
+                    let previousScore = null;
+                    let teamsAtSameRank = 0;
+
+                    return sortedTeams.map((team, index) => {
+                      if (previousScore !== null && team.totalScore < previousScore) {
+                        currentRank += teamsAtSameRank;
+                        teamsAtSameRank = 1;
+                      } else if (previousScore === team.totalScore) {
+                        teamsAtSameRank++;
+                      } else {
+                        teamsAtSameRank = 1;
+                      }
+                      previousScore = team.totalScore;
+
+                      return (
+                        <div key={team.teamId} className="flex justify-between items-center">
+                          <div className="flex items-center space-x-4">
+                            <div className={`text-2xl ${currentRank === 1 ? 'text-yellow-400' : currentRank === 2 ? 'text-gray-300' : currentRank === 3 ? 'text-orange-400' : 'text-gray-500'}`}>
+                              #{currentRank}
+                            </div>
+                            <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
+                            <div className="text-xl font-bold text-white">{team.teamName}</div>
                           </div>
-                          <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
-                          <div className="text-xl font-bold text-white">{team.teamName}</div>
+                          <div className="text-2xl font-bold text-elite-gold">{team.totalScore} pts</div>
                         </div>
-                        <div className="text-2xl font-bold text-elite-gold">{team.totalScore} pts</div>
-                      </div>
-                    ))}
+                      );
+                    });
+                  })()}
                 </div>
               )}
             </CardContent>
