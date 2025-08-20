@@ -43,6 +43,7 @@ export default function GameStart() {
   const [activeParticipants, setActiveParticipants] = useState<number[]>([]);
   const [roundComplete, setRoundComplete] = useState(false);
   const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [gameTimeExpired, setGameTimeExpired] = useState(false);
   const [scoresSubmitted, setScoresSubmitted] = useState(false);
   
   // Score state
@@ -142,12 +143,16 @@ export default function GameStart() {
       // Round time finished - stop timer but don't auto-advance
       setIsRoundActive(false);
       setRoundComplete(true);
+      // If game time expired while round was active, show modal now
+      if (gameTimeExpired) {
+        setShowGameOverModal(true);
+      }
     }
 
     return () => {
       if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
     };
-  }, [isRoundActive, roundTimeLeft]);
+  }, [isRoundActive, roundTimeLeft, gameTimeExpired]);
 
   useEffect(() => {
     if (isTotalTimerActive && totalTimeLeft > 0) {
@@ -155,10 +160,12 @@ export default function GameStart() {
         setTotalTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (isTotalTimerActive && totalTimeLeft === 0) {
-      // Total time expired - show modal but don't end game yet
-      setIsRoundActive(false);
+      // Total time expired - set flag and show modal only if round is not active
       setIsTotalTimerActive(false);
-      setShowGameOverModal(true);
+      setGameTimeExpired(true);
+      if (!isRoundActive) {
+        setShowGameOverModal(true);
+      }
     }
 
     return () => {
@@ -613,7 +620,7 @@ export default function GameStart() {
                   Game Over!
                 </h2>
                 <p className="text-gray-300 text-lg mb-6">
-                  5-minute timer has expired. Please finish adding scores and exit the game.
+                  5-minute timer has expired. The round has finished - please add final scores and exit the game.
                 </p>
                 <div className="space-y-3">
                   <Button
