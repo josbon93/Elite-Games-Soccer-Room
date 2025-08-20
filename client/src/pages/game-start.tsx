@@ -189,10 +189,11 @@ export default function GameStart() {
     // If scores are submitted and not the last round, advance to next round first
     if (scoresSubmitted && currentRound < totalRounds) {
       const { participantsPerRound } = calculateGameStructure();
-      setCurrentRound(prev => prev + 1);
-      // Set active participants for next round
-      if (participantsPerRound[currentRound]) {
-        setActiveParticipants(participantsPerRound[currentRound]);
+      const nextRound = currentRound + 1;
+      setCurrentRound(nextRound);
+      // Set active participants for next round (using the new round number)
+      if (participantsPerRound[nextRound - 1]) { // Array is 0-indexed, rounds are 1-indexed
+        setActiveParticipants(participantsPerRound[nextRound - 1]);
       }
     }
     
@@ -626,7 +627,8 @@ export default function GameStart() {
                         <div className="flex justify-center gap-2 flex-wrap">
                           {(() => {
                             const { participantsPerRound } = calculateGameStructure();
-                            const nextRoundParticipants = participantsPerRound[currentRound + 1] || [];
+                            // Array is 0-indexed, so currentRound (next round) maps to currentRound-1 in array
+                            const nextRoundParticipants = participantsPerRound[currentRound] || [];
                             
                             if (currentMode === 'individual') {
                               return nextRoundParticipants.map(playerId => (
