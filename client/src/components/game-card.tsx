@@ -17,13 +17,11 @@ const gameIcons = {
 export default function GameCard({ game, onSelectGame, onShowInstructions, index }: GameCardProps) {
   return (
     <motion.div 
-      className="game-card rounded-2xl p-8 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-      onClick={() => onSelectGame(game)}
+      className="game-card rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-2xl"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.2 }}
       whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.98 }}
     >
       <div className="text-center">
         <motion.div 
@@ -49,6 +47,10 @@ export default function GameCard({ game, onSelectGame, onShowInstructions, index
           </motion.button>
           <motion.button 
             className="bg-soccer-green text-white px-6 py-3 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors duration-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectGame(game);
+            }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
