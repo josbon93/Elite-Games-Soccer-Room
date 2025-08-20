@@ -95,3 +95,25 @@ The frontend follows a hierarchical component structure:
 - **Replit Integration**: Custom Vite plugins for Replit development environment
 - **Runtime Error Handling**: Development-time error overlay for debugging
 - **Environment Variables**: Database URL and configuration management through environment variables
+
+## Local Deployment Architecture
+
+The application has been configured for local server deployment in the Elite Games Soccer room environment:
+
+### Local Server Setup
+- **Network Configuration**: Server binds to `0.0.0.0:5000` for local network access
+- **Tablet Connectivity**: Designed for multiple Galaxy tablets connecting via WiFi
+- **Deployment Scripts**: Automated setup scripts for Windows (`start-local-server.bat`) and Linux/macOS (`start-local-server.sh`)
+- **Network Discovery**: Automatic local IP detection and tablet access URL generation
+
+### Deployment Files
+- **DEPLOYMENT_GUIDE.md**: Comprehensive setup instructions for local server installation
+- **README-LOCAL-SETUP.md**: Quick start guide for Elite Games staff
+- **package-scripts/setup-local.js**: Network configuration and system requirements checker
+- **Local Configuration**: Automatic generation of local network settings and access URLs
+
+### Physical Environment Requirements
+- **Server Hardware**: Minimum 2GB RAM, Node.js v18+, Windows/Linux/macOS support
+- **Network Setup**: Local WiFi network with static IP recommendation for server
+- **Firewall Configuration**: Port 5000 access for tablet connectivity
+- **Tablet Access**: Web browser access via `http://[server-ip]:5000` on same network
