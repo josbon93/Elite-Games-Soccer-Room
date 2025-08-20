@@ -36,8 +36,20 @@ export default function TeamAssignment() {
   const teamNames = ['Red Team', 'Blue Team', 'Green Team', 'Yellow Team'];
 
   useEffect(() => {
-    // Redirect to home if no game or player count selected
-    if (!currentGame || !currentPlayerCount) {
+    // Redirect to home if no game selected
+    if (!currentGame) {
+      setLocation('/');
+      return;
+    }
+    
+    // For Team Relay Shootout, redirect to player count if no player count set
+    if (currentGame.type === 'team-relay-shootout' && !currentPlayerCount) {
+      setLocation('/player-count');
+      return;
+    }
+    
+    // For other games, redirect home if no player count
+    if (currentGame.type !== 'team-relay-shootout' && !currentPlayerCount) {
       setLocation('/');
       return;
     }
@@ -47,7 +59,7 @@ export default function TeamAssignment() {
     
     // Initialize empty assignments
     const initialAssignments: TeamAssignment = {};
-    for (let i = 1; i <= currentPlayerCount; i++) {
+    for (let i = 1; i <= (currentPlayerCount || 0); i++) {
       initialAssignments[i] = 0; // 0 means unassigned
     }
     setTeamAssignments(initialAssignments);
