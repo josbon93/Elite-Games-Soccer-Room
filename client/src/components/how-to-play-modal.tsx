@@ -26,7 +26,7 @@ const gameInstructions = {
     '🏆 <strong>Winning:</strong> Player or Team with the highest score wins!'
   ],
   'team-relay-shootout': [
-    '🎯 <strong>Objective:</strong> Score the most points by shooting into your team color zones and getting points when opponents miss.',
+    '🎯 <strong>Objective:</strong> Score the most points by shooting into your team\'s color zones and earn points when opponents score into your team\'s color zones.',
     '👥 <strong>Team Setup:</strong> 2-4 teams rotate taking shots with their team color balls at the colored target zones.',
     '⚽ <strong>How to Play:</strong> Players rotate from each team, shooting their team color balls at any colored target zones during the 5-minute game timer.',
     '🎲 <strong>Scoring:</strong> Get 3 points for scoring in your team color zones, get 1 point when opponents accidentally score in your color zones.',
