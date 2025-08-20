@@ -44,7 +44,7 @@ export class MemStorage implements IStorage {
       {
         name: "Team Relay Shootout",
         type: GAME_TYPES.TEAM_RELAY_SHOOTOUT,
-        description: "Break into 2-4 teams and take turns shooting at your team's 5 color target zones first before the other teams do!",
+        description: "Break into 2-4 teams and take turns shooting at your team's 3 color target zones to accumulate points to see which team can accumulate the most points!",
         maxPlayers: 8,
         maxTeams: 4,
         teamsOnly: 1,
