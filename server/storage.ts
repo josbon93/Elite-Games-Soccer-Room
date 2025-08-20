@@ -28,7 +28,7 @@ export class MemStorage implements IStorage {
       {
         name: "Soccer Skeeball",
         type: GAME_TYPES.SOCCER_SKEEBALL,
-        description: "Soccer meets skeeball, where you shoot 5 shots at goal to accumulate points, with the outside target zones worth the most points!",
+        description: "Soccer meets skeeball, where you have 45 seconds to shoot at goal to accumulate points, with each target zone worth a different amount of points!",
         maxPlayers: 8,
         maxTeams: 4,
         teamsOnly: 0,
