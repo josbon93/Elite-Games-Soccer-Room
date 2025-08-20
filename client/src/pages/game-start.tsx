@@ -186,6 +186,16 @@ export default function GameStart() {
   };
 
   const startRoundTimer = () => {
+    // If scores are submitted and not the last round, advance to next round first
+    if (scoresSubmitted && currentRound < totalRounds) {
+      const { participantsPerRound } = calculateGameStructure();
+      setCurrentRound(prev => prev + 1);
+      // Set active participants for next round
+      if (participantsPerRound[currentRound]) {
+        setActiveParticipants(participantsPerRound[currentRound]);
+      }
+    }
+    
     setIsRoundActive(true);
     setRoundTimeLeft(45);
     setRoundComplete(false);
@@ -434,13 +444,15 @@ export default function GameStart() {
               </div>
 
               <div className="text-center mb-4">
-                {!isRoundActive && roundTimeLeft === 45 && (
+                {!isRoundActive && (roundTimeLeft === 45 || (scoresSubmitted && currentRound < totalRounds)) && (
                   <Button
                     onClick={startRoundTimer}
                     className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3"
                   >
                     <i className="fas fa-play mr-2"></i>
-                    Start Round {currentRound}
+                    {scoresSubmitted && currentRound < totalRounds 
+                      ? `Start Round ${currentRound + 1}`
+                      : `Start Round ${currentRound}`}
                   </Button>
                 )}
                 
@@ -602,15 +614,6 @@ export default function GameStart() {
                       <i className="fas fa-check mr-2"></i>
                       Round {currentRound} Scores Submitted!
                     </div>
-                    {currentRound < totalRounds && (
-                      <Button
-                        onClick={startNextRound}
-                        className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3"
-                      >
-                        <i className="fas fa-play mr-2"></i>
-                        Go to Next Round
-                      </Button>
-                    )}
                     {currentRound >= totalRounds && (
                       <Button
                         onClick={() => setGamePhase('finished')}
