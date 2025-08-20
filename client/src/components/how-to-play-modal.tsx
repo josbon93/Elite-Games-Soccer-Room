@@ -17,12 +17,13 @@ const gameInstructions = {
     '🏆 <strong>Winning:</strong> Player or Team with the highest score wins!'
   ],
   'elite-shooter': [
-    '🎯 <strong>Objective:</strong> Hit as many targets as possible within the time limit',
-    '⚽ <strong>Setup:</strong> Position yourself at the shooting line with soccer balls ready',
-    '🎮 <strong>How to Play:</strong> Kick balls at the illuminated targets as they light up',
-    '💡 <strong>Target System:</strong> Targets will light up randomly - hit them while they\'re active',
-    '⚡ <strong>Speed Rounds:</strong> Targets light up faster as the game progresses',
-    '🏆 <strong>Winning:</strong> Most targets hit wins! Accuracy and speed are key!'
+    '🎯 <strong>Objective:</strong> Score points by hitting the numbered perimeter target zones (1-9) within 45 second timer.',
+    '🏃 <strong>Setup:</strong> Gather 10 balls of the same color and have it ready behind the shooting line.',
+    '⚽ <strong>How to Play:</strong> Kick the 10 balls, one at a time towards the numbered perimeter zones (1-9) before the 45 second timer ends, if playing on teams, both players play the round at the same time with 5 balls each of the same color.',
+    '❌ <strong>Avoid "X" Zones:</strong> Do NOT shoot into the center zones marked with "X" - these are off-limits!',
+    '🎲 <strong>Scoring:</strong> Only balls that land in the numbered perimeter zones (1-9) count for points.',
+    '⏰ <strong>Time Limit:</strong> Whether on teams or individuals, you have 45 seconds to score as many points as possible with 10 balls.',
+    '🏆 <strong>Winning:</strong> Player or Team with the highest score wins!'
   ],
   'team-relay-shootout': [
     '🏃 <strong>Objective:</strong> Work as a team to complete shooting challenges in relay format',

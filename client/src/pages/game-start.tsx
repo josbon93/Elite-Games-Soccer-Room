@@ -55,12 +55,26 @@ export default function GameStart() {
   const roundTimerRef = useRef<NodeJS.Timeout | null>(null);
   const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Scoring grid based on your image
-  const scoringGrid = [
-    [50, 25, 15, 25, 50],
-    [25, -10, 10, -10, 25],
-    [15, 10, 10, 10, 15]
-  ];
+  // Scoring grids based on game type
+  const getScoringGrid = (): (number | string)[][] => {
+    if (currentGame?.type === 'elite-shooter') {
+      // Elite Shooter: perimeter zones 1-9, inside zones marked "X"
+      return [
+        [1, 2, 3, 4, 5],
+        [6, 'X', 'X', 'X', 7],
+        [8, 'X', 'X', 'X', 9]
+      ];
+    } else {
+      // Soccer Skeeball: original scoring values
+      return [
+        [50, 25, 15, 25, 50],
+        [25, -10, 10, -10, 25],
+        [15, 10, 10, 10, 15]
+      ];
+    }
+  };
+
+  const scoringGrid = getScoringGrid();
 
   // Calculate rounds and participants structure
   const calculateGameStructure = () => {
@@ -330,14 +344,18 @@ export default function GameStart() {
                   <div
                     key={index}
                     className={`h-20 flex items-center justify-center text-2xl font-bold rounded-lg border-2 border-black ${
-                      score > 0 
-                        ? score >= 50 ? 'bg-purple-600 text-white' 
-                          : score >= 25 ? 'bg-purple-500 text-white'
-                          : 'bg-purple-400 text-white'
-                        : 'bg-purple-800 text-red-300'
+                      currentGame?.type === 'elite-shooter' 
+                        ? score === 'X' ? 'bg-purple-800 text-red-300' : 'bg-purple-500 text-white'
+                        : typeof score === 'number' && score > 0 
+                          ? score >= 50 ? 'bg-purple-600 text-white' 
+                            : score >= 25 ? 'bg-purple-500 text-white'
+                            : 'bg-purple-400 text-white'
+                          : 'bg-purple-800 text-red-300'
                     }`}
                   >
-                    {score > 0 ? `+${score}` : score}
+                    {currentGame?.type === 'elite-shooter' 
+                      ? score 
+                      : typeof score === 'number' && score > 0 ? `+${score}` : score}
                   </div>
                 ))}
               </div>
@@ -395,7 +413,7 @@ export default function GameStart() {
             
             <div className="text-center">
               <h1 className="text-3xl font-bold text-elite-gold">Round {currentRound}/{totalRounds}</h1>
-              <div className="text-gray-300">Soccer Skeeball</div>
+              <div className="text-gray-300">{currentGame?.name || 'Game'}</div>
             </div>
             
             <div className="text-center">
@@ -428,16 +446,20 @@ export default function GameStart() {
                       <motion.div
                         key={index}
                         className={`h-16 flex items-center justify-center text-xl font-bold rounded border-2 border-black cursor-pointer transition-all ${
-                          score > 0 
-                            ? score >= 50 ? 'bg-purple-600 text-white hover:bg-purple-500' 
-                              : score >= 25 ? 'bg-purple-500 text-white hover:bg-purple-400'
-                              : 'bg-purple-400 text-white hover:bg-purple-300'
-                            : 'bg-purple-800 text-red-300 hover:bg-purple-700'
+                          currentGame?.type === 'elite-shooter' 
+                            ? score === 'X' ? 'bg-purple-800 text-red-300 hover:bg-purple-700' : 'bg-purple-500 text-white hover:bg-purple-400'
+                            : typeof score === 'number' && score > 0 
+                              ? score >= 50 ? 'bg-purple-600 text-white hover:bg-purple-500' 
+                                : score >= 25 ? 'bg-purple-500 text-white hover:bg-purple-400'
+                                : 'bg-purple-400 text-white hover:bg-purple-300'
+                              : 'bg-purple-800 text-red-300 hover:bg-purple-700'
                         }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        {score > 0 ? `+${score}` : score}
+                        {currentGame?.type === 'elite-shooter' 
+                          ? score 
+                          : typeof score === 'number' && score > 0 ? `+${score}` : score}
                       </motion.div>
                     ))}
                   </div>
