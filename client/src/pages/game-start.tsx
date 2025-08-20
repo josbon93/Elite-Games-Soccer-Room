@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface PlayerScore {
   playerId: number;
@@ -601,36 +600,40 @@ export default function GameStart() {
         </div>
 
         {/* Game Over Modal */}
-        <Dialog open={showGameOverModal} onOpenChange={() => {}}>
-          <DialogContent className="sm:max-w-md bg-gray-800 border-gray-600">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-red-400 text-center">
-                <i className="fas fa-clock mr-2"></i>
-                Game Over!
-              </DialogTitle>
-            </DialogHeader>
-            <div className="text-center py-4">
-              <p className="text-gray-300 text-lg mb-6">
-                5-minute timer has expired. Please finish adding scores and exit the game.
-              </p>
-              <div className="space-y-3">
-                <Button
-                  onClick={() => setShowGameOverModal(false)}
-                  className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3 w-full"
-                >
-                  Continue Adding Scores
-                </Button>
-                <Button
-                  onClick={exitGame}
-                  variant="outline"
-                  className="border-gray-500 text-gray-300 hover:bg-gray-700 px-6 py-3 w-full"
-                >
-                  Exit Game Now
-                </Button>
+        {showGameOverModal && (
+          <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-800 border border-gray-600 rounded-lg p-6 max-w-md mx-4"
+            >
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-red-400 mb-4">
+                  <i className="fas fa-clock mr-2"></i>
+                  Game Over!
+                </h2>
+                <p className="text-gray-300 text-lg mb-6">
+                  5-minute timer has expired. Please finish adding scores and exit the game.
+                </p>
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => setShowGameOverModal(false)}
+                    className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3 w-full"
+                  >
+                    Continue Adding Scores
+                  </Button>
+                  <Button
+                    onClick={exitGame}
+                    variant="outline"
+                    className="border-gray-500 text-gray-300 hover:bg-gray-700 px-6 py-3 w-full"
+                  >
+                    Exit Game Now
+                  </Button>
+                </div>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </motion.div>
+          </div>
+        )}
       </div>
     );
   }
