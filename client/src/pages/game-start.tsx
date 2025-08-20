@@ -397,10 +397,10 @@ export default function GameStart() {
               <div className="max-w-lg mx-auto mb-6">
                 {/* Soccer Goal Frame */}
                 <div className="relative p-6 bg-black">
-                  {/* Left Goal Post */}
-                  <div className="absolute left-0 top-0 bottom-0 w-6 bg-white"></div>
-                  {/* Right Goal Post */}
-                  <div className="absolute right-0 top-0 bottom-0 w-6 bg-white"></div>
+                  {/* Left Goal Post - shortened to align with grid */}
+                  <div className="absolute left-0 top-0 w-6 bg-white" style={{ height: 'calc(100% - 24px)' }}></div>
+                  {/* Right Goal Post - shortened to align with grid */}
+                  <div className="absolute right-0 top-0 w-6 bg-white" style={{ height: 'calc(100% - 24px)' }}></div>
                   {/* Top Crossbar */}
                   <div className="absolute top-0 left-0 right-0 h-6 bg-white"></div>
                   
