@@ -215,7 +215,7 @@ export default function GameStart() {
   const incrementScore = (playerId: number, increment: number) => {
     const key = `${playerId}-${currentRound}`;
     const currentValue = parseInt(tempScores[key] || '0');
-    const newValue = Math.max(0, currentValue + increment);
+    const newValue = currentValue + increment;
     setTempScores(prev => ({ ...prev, [key]: newValue.toString() }));
   };
 
