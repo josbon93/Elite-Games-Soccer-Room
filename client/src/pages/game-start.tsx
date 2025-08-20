@@ -614,6 +614,45 @@ export default function GameStart() {
                       <i className="fas fa-check mr-2"></i>
                       Round {currentRound} Scores Submitted!
                     </div>
+                    
+                    {currentRound < totalRounds && (
+                      <div className="bg-gray-700 border border-gray-600 rounded-lg p-4">
+                        <div className="text-elite-gold font-bold mb-2">
+                          Next: Round {currentRound + 1}
+                        </div>
+                        <div className="text-gray-300 text-sm mb-2">
+                          Players up next:
+                        </div>
+                        <div className="flex justify-center gap-2 flex-wrap">
+                          {(() => {
+                            const { participantsPerRound } = calculateGameStructure();
+                            const nextRoundParticipants = participantsPerRound[currentRound + 1] || [];
+                            
+                            if (currentMode === 'individual') {
+                              return nextRoundParticipants.map(playerId => (
+                                <span key={playerId} className="bg-elite-gold text-black px-3 py-1 rounded-full text-sm font-bold">
+                                  Player {playerId}
+                                </span>
+                              ));
+                            } else {
+                              return nextRoundParticipants.map(teamId => {
+                                const team = teamScores.find(t => t.teamId === teamId);
+                                return team ? (
+                                  <span key={teamId} className="bg-elite-gold text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                                    <div className={`w-3 h-3 rounded-full bg-${team.teamColor}-500`}></div>
+                                    {team.teamName}
+                                  </span>
+                                ) : null;
+                              });
+                            }
+                          })()}
+                        </div>
+                        <div className="text-gray-400 text-xs mt-2 text-center">
+                          Get ready! Click "Start Round {currentRound + 1}" when ready.
+                        </div>
+                      </div>
+                    )}
+                    
                     {currentRound >= totalRounds && (
                       <Button
                         onClick={() => setGamePhase('finished')}
