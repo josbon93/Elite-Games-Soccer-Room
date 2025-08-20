@@ -36,7 +36,7 @@ export class MemStorage implements IStorage {
       {
         name: "Elite Shooter",
         type: GAME_TYPES.ELITE_SHOOTER,
-        description: "Test to see if you can score in as many outside target zones before the 45 second timer runs out!",
+        description: "Put your accuracy to the test! You've got 45 seconds to score in all 9 target zones around the goal. Can you hit them all before the clock runs out?",
         maxPlayers: 8,
         maxTeams: 4,
         teamsOnly: 0,
