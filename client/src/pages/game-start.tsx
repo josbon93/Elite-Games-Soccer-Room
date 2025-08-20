@@ -229,7 +229,13 @@ export default function GameStart() {
   const incrementScore = (playerId: number, increment: number) => {
     const key = `${playerId}-${currentRound}`;
     const currentValue = parseInt(tempScores[key] || '0');
-    const newValue = currentValue + increment;
+    let newValue = currentValue + increment;
+    
+    // For Elite Shooter, prevent scores from going below 0
+    if (currentGame?.type === 'elite-shooter' && newValue < 0) {
+      newValue = 0;
+    }
+    
     setTempScores(prev => ({ ...prev, [key]: newValue.toString() }));
   };
 
@@ -553,9 +559,9 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(player.playerId, -5)}
+                                    onClick={() => incrementScore(player.playerId, currentGame?.type === 'elite-shooter' ? -1 : -5)}
                                   >
-                                    -5
+                                    {currentGame?.type === 'elite-shooter' ? '-1' : '-5'}
                                   </Button>
                                   <Input
                                     type="number"
@@ -568,9 +574,9 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(player.playerId, 5)}
+                                    onClick={() => incrementScore(player.playerId, currentGame?.type === 'elite-shooter' ? 1 : 5)}
                                   >
-                                    +5
+                                    {currentGame?.type === 'elite-shooter' ? '+1' : '+5'}
                                   </Button>
                                 </div>
                                 <span className="text-gray-300">pts</span>
@@ -607,9 +613,9 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(team.teamId, -5)}
+                                    onClick={() => incrementScore(team.teamId, currentGame?.type === 'elite-shooter' ? -1 : -5)}
                                   >
-                                    -5
+                                    {currentGame?.type === 'elite-shooter' ? '-1' : '-5'}
                                   </Button>
                                   <Input
                                     type="number"
@@ -622,9 +628,9 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(team.teamId, 5)}
+                                    onClick={() => incrementScore(team.teamId, currentGame?.type === 'elite-shooter' ? 1 : 5)}
                                   >
-                                    +5
+                                    {currentGame?.type === 'elite-shooter' ? '+1' : '+5'}
                                   </Button>
                                 </div>
                                 <span className="text-gray-300">pts</span>
