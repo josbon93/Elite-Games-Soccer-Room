@@ -687,26 +687,31 @@ export default function GameStart() {
                 <div className="space-y-4">
                   {(() => {
                     const sortedPlayers = playerScores.sort((a, b) => b.totalScore - a.totalScore);
-                    let currentRank = 1;
-                    let previousScore = null;
-                    let playersAtSameRank = 0;
+                    const highestScore = sortedPlayers[0]?.totalScore || 0;
+                    const playersWithHighestScore = sortedPlayers.filter(p => p.totalScore === highestScore);
+                    const isTie = playersWithHighestScore.length > 1;
 
-                    return sortedPlayers.map((player, index) => {
-                      if (previousScore !== null && player.totalScore < previousScore) {
-                        currentRank += playersAtSameRank;
-                        playersAtSameRank = 1;
-                      } else if (previousScore === player.totalScore) {
-                        playersAtSameRank++;
+                    return sortedPlayers.map((player) => {
+                      const isWinner = player.totalScore === highestScore;
+                      let resultLabel = '';
+                      let resultColor = '';
+                      
+                      if (isWinner && isTie) {
+                        resultLabel = 'T';
+                        resultColor = 'text-yellow-400';
+                      } else if (isWinner && !isTie) {
+                        resultLabel = 'W';
+                        resultColor = 'text-green-400';
                       } else {
-                        playersAtSameRank = 1;
+                        resultLabel = 'L';
+                        resultColor = 'text-red-400';
                       }
-                      previousScore = player.totalScore;
 
                       return (
                         <div key={player.playerId} className="flex justify-between items-center">
                           <div className="flex items-center space-x-4">
-                            <div className={`text-2xl ${currentRank === 1 ? 'text-yellow-400' : currentRank === 2 ? 'text-gray-300' : currentRank === 3 ? 'text-orange-400' : 'text-gray-500'}`}>
-                              #{currentRank}
+                            <div className={`text-2xl font-bold ${resultColor}`}>
+                              {resultLabel}
                             </div>
                             <div className="text-xl font-bold text-white">{player.playerName}</div>
                           </div>
@@ -720,26 +725,31 @@ export default function GameStart() {
                 <div className="space-y-4">
                   {(() => {
                     const sortedTeams = teamScores.sort((a, b) => b.totalScore - a.totalScore);
-                    let currentRank = 1;
-                    let previousScore = null;
-                    let teamsAtSameRank = 0;
+                    const highestScore = sortedTeams[0]?.totalScore || 0;
+                    const teamsWithHighestScore = sortedTeams.filter(t => t.totalScore === highestScore);
+                    const isTie = teamsWithHighestScore.length > 1;
 
-                    return sortedTeams.map((team, index) => {
-                      if (previousScore !== null && team.totalScore < previousScore) {
-                        currentRank += teamsAtSameRank;
-                        teamsAtSameRank = 1;
-                      } else if (previousScore === team.totalScore) {
-                        teamsAtSameRank++;
+                    return sortedTeams.map((team) => {
+                      const isWinner = team.totalScore === highestScore;
+                      let resultLabel = '';
+                      let resultColor = '';
+                      
+                      if (isWinner && isTie) {
+                        resultLabel = 'T';
+                        resultColor = 'text-yellow-400';
+                      } else if (isWinner && !isTie) {
+                        resultLabel = 'W';
+                        resultColor = 'text-green-400';
                       } else {
-                        teamsAtSameRank = 1;
+                        resultLabel = 'L';
+                        resultColor = 'text-red-400';
                       }
-                      previousScore = team.totalScore;
 
                       return (
                         <div key={team.teamId} className="flex justify-between items-center">
                           <div className="flex items-center space-x-4">
-                            <div className={`text-2xl ${currentRank === 1 ? 'text-yellow-400' : currentRank === 2 ? 'text-gray-300' : currentRank === 3 ? 'text-orange-400' : 'text-gray-500'}`}>
-                              #{currentRank}
+                            <div className={`text-2xl font-bold ${resultColor}`}>
+                              {resultLabel}
                             </div>
                             <div className={`w-6 h-6 rounded-full bg-${team.teamColor}-500`}></div>
                             <div className="text-xl font-bold text-white">{team.teamName}</div>
