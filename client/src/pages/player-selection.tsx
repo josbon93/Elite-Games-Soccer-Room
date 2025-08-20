@@ -95,7 +95,31 @@ export default function PlayerSelection() {
     }
   };
 
-  if (!currentGame || !currentMode) return null;
+  // Show loading while mode is being set from URL
+  if (!currentGame) {
+    return null; // Will redirect to home in useEffect
+  }
+
+  if (!currentMode && modeFromUrl) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-center">
+          <motion.div
+            className="inline-flex items-center space-x-3 text-elite-gold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <i className="fas fa-spinner fa-spin text-2xl"></i>
+            <span className="text-xl font-semibold">Loading...</span>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentMode) {
+    return null; // Invalid state
+  }
 
   const isIndividual = currentMode === 'individual';
   const maxCount = isIndividual ? currentGame.maxPlayers : currentGame.maxTeams;
