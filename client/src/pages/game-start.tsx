@@ -36,7 +36,10 @@ export default function GameStart() {
   // Game state
   const [gamePhase, setGamePhase] = useState<'setup' | 'playing' | 'finished'>('setup');
   const [currentRound, setCurrentRound] = useState(1);
-  const [roundTimeLeft, setRoundTimeLeft] = useState(45); // 45 seconds per round
+  const [roundTimeLeft, setRoundTimeLeft] = useState(() => {
+    // Team Relay Shootout uses 5 minutes for the single round
+    return currentGame?.type === 'team-relay-shootout' ? 300 : 45;
+  }); 
   const [totalTimeLeft, setTotalTimeLeft] = useState(300); // 5 minutes total
   const [isRoundActive, setIsRoundActive] = useState(false);
   const [isTotalTimerActive, setIsTotalTimerActive] = useState(false);
@@ -64,6 +67,16 @@ export default function GameStart() {
         [6, 'X', 'X', 'X', 7],
         [8, 'X', 'X', 'X', 9]
       ];
+    } else if (currentGame?.type === 'team-relay-shootout') {
+      // Team Relay Shootout: color-coded team zones
+      const teamColors = ['R', 'B', 'G', 'Y']; // Red, Blue, Green, Yellow
+      const assignments = [
+        ['R', 'R', 'R', 'B', 'B'],
+        ['B', 'Y', 'Y', 'Y', 'G'],
+        ['G', 'G', '', '', '']
+      ];
+      // Fill remaining spots based on team count
+      return assignments;
     } else {
       // Soccer Skeeball: original scoring values
       return [
@@ -78,6 +91,15 @@ export default function GameStart() {
 
   // Calculate rounds and participants structure
   const calculateGameStructure = () => {
+    // Team Relay Shootout only has 1 round with all teams participating
+    if (currentGame?.type === 'team-relay-shootout') {
+      const allTeams = Array.from({ length: currentTeamCount }, (_, i) => i + 1);
+      return { 
+        rounds: 1, 
+        participantsPerRound: [allTeams]
+      };
+    }
+    
     const participantCount = currentMode === 'individual' ? currentPlayerCount : currentTeamCount;
     
     let rounds = 0;
@@ -212,7 +234,9 @@ export default function GameStart() {
     }
     
     setIsRoundActive(true);
-    setRoundTimeLeft(45);
+    // Set appropriate round time based on game type
+    const roundTime = currentGame?.type === 'team-relay-shootout' ? 300 : 45;
+    setRoundTimeLeft(roundTime);
     setRoundComplete(false);
     setScoresSubmitted(false);
     // Start total timer only when first round begins
@@ -231,8 +255,8 @@ export default function GameStart() {
     const currentValue = parseInt(tempScores[key] || '0');
     let newValue = currentValue + increment;
     
-    // For Elite Shooter, prevent scores from going below 0
-    if (currentGame?.type === 'elite-shooter' && newValue < 0) {
+    // For Elite Shooter and Team Relay Shootout, prevent scores from going below 0
+    if ((currentGame?.type === 'elite-shooter' || currentGame?.type === 'team-relay-shootout') && newValue < 0) {
       newValue = 0;
     }
     
@@ -352,6 +376,12 @@ export default function GameStart() {
                     className={`h-20 flex items-center justify-center text-2xl font-bold rounded-lg border-2 border-black ${
                       currentGame?.type === 'elite-shooter' 
                         ? score === 'X' ? 'bg-purple-800 text-red-300' : 'bg-purple-500 text-white'
+                        : currentGame?.type === 'team-relay-shootout'
+                          ? score === 'R' ? 'bg-red-500 text-white'
+                            : score === 'B' ? 'bg-blue-500 text-white'  
+                            : score === 'G' ? 'bg-green-500 text-white'
+                            : score === 'Y' ? 'bg-yellow-500 text-black'
+                            : 'bg-gray-400 text-gray-600'
                         : typeof score === 'number' && score > 0 
                           ? score >= 50 ? 'bg-purple-600 text-white' 
                             : score >= 25 ? 'bg-purple-500 text-white'
@@ -361,7 +391,13 @@ export default function GameStart() {
                   >
                     {currentGame?.type === 'elite-shooter' 
                       ? score 
-                      : typeof score === 'number' && score > 0 ? `+${score}` : score}
+                      : currentGame?.type === 'team-relay-shootout'
+                        ? score === 'R' ? 'RED'
+                          : score === 'B' ? 'BLUE'
+                          : score === 'G' ? 'GREEN'
+                          : score === 'Y' ? 'YELLOW'
+                          : ''
+                        : typeof score === 'number' && score > 0 ? `+${score}` : score}
                   </div>
                 ))}
               </div>
@@ -454,18 +490,30 @@ export default function GameStart() {
                         className={`h-16 flex items-center justify-center text-xl font-bold rounded border-2 border-black cursor-pointer transition-all ${
                           currentGame?.type === 'elite-shooter' 
                             ? score === 'X' ? 'bg-purple-800 text-red-300 hover:bg-purple-700' : 'bg-purple-500 text-white hover:bg-purple-400'
-                            : typeof score === 'number' && score > 0 
-                              ? score >= 50 ? 'bg-purple-600 text-white hover:bg-purple-500' 
-                                : score >= 25 ? 'bg-purple-500 text-white hover:bg-purple-400'
-                                : 'bg-purple-400 text-white hover:bg-purple-300'
-                              : 'bg-purple-800 text-red-300 hover:bg-purple-700'
+                            : currentGame?.type === 'team-relay-shootout'
+                              ? score === 'R' ? 'bg-red-500 text-white hover:bg-red-400'
+                                : score === 'B' ? 'bg-blue-500 text-white hover:bg-blue-400'  
+                                : score === 'G' ? 'bg-green-500 text-white hover:bg-green-400'
+                                : score === 'Y' ? 'bg-yellow-500 text-black hover:bg-yellow-400'
+                                : 'bg-gray-400 text-gray-600 hover:bg-gray-300'
+                              : typeof score === 'number' && score > 0 
+                                ? score >= 50 ? 'bg-purple-600 text-white hover:bg-purple-500' 
+                                  : score >= 25 ? 'bg-purple-500 text-white hover:bg-purple-400'
+                                  : 'bg-purple-400 text-white hover:bg-purple-300'
+                                : 'bg-purple-800 text-red-300 hover:bg-purple-700'
                         }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         {currentGame?.type === 'elite-shooter' 
                           ? score 
-                          : typeof score === 'number' && score > 0 ? `+${score}` : score}
+                          : currentGame?.type === 'team-relay-shootout'
+                            ? score === 'R' ? 'RED'
+                              : score === 'B' ? 'BLUE'
+                              : score === 'G' ? 'GREEN'
+                              : score === 'Y' ? 'YELLOW'
+                              : ''
+                            : typeof score === 'number' && score > 0 ? `+${score}` : score}
                       </motion.div>
                     ))}
                   </div>
@@ -559,9 +607,11 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(player.playerId, currentGame?.type === 'elite-shooter' ? -1 : -5)}
+                                    onClick={() => incrementScore(player.playerId, 
+                                      currentGame?.type === 'elite-shooter' ? -1 : 
+                                      currentGame?.type === 'team-relay-shootout' ? -1 : -5)}
                                   >
-                                    {currentGame?.type === 'elite-shooter' ? '-1' : '-5'}
+                                    {currentGame?.type === 'elite-shooter' || currentGame?.type === 'team-relay-shootout' ? '-1' : '-5'}
                                   </Button>
                                   <Input
                                     type="number"
@@ -574,9 +624,11 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(player.playerId, currentGame?.type === 'elite-shooter' ? 1 : 5)}
+                                    onClick={() => incrementScore(player.playerId, 
+                                      currentGame?.type === 'elite-shooter' ? 1 : 
+                                      currentGame?.type === 'team-relay-shootout' ? 1 : 5)}
                                   >
-                                    {currentGame?.type === 'elite-shooter' ? '+1' : '+5'}
+                                    {currentGame?.type === 'elite-shooter' || currentGame?.type === 'team-relay-shootout' ? '+1' : '+5'}
                                   </Button>
                                 </div>
                                 <span className="text-gray-300">pts</span>
@@ -613,9 +665,11 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(team.teamId, currentGame?.type === 'elite-shooter' ? -1 : -5)}
+                                    onClick={() => incrementScore(team.teamId, 
+                                      currentGame?.type === 'elite-shooter' ? -1 : 
+                                      currentGame?.type === 'team-relay-shootout' ? -1 : -5)}
                                   >
-                                    {currentGame?.type === 'elite-shooter' ? '-1' : '-5'}
+                                    {currentGame?.type === 'elite-shooter' || currentGame?.type === 'team-relay-shootout' ? '-1' : '-5'}
                                   </Button>
                                   <Input
                                     type="number"
@@ -628,9 +682,11 @@ export default function GameStart() {
                                     size="sm"
                                     variant="outline"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => incrementScore(team.teamId, currentGame?.type === 'elite-shooter' ? 1 : 5)}
+                                    onClick={() => incrementScore(team.teamId, 
+                                      currentGame?.type === 'elite-shooter' ? 1 : 
+                                      currentGame?.type === 'team-relay-shootout' ? 1 : 5)}
                                   >
-                                    {currentGame?.type === 'elite-shooter' ? '+1' : '+5'}
+                                    {currentGame?.type === 'elite-shooter' || currentGame?.type === 'team-relay-shootout' ? '+1' : '+5'}
                                   </Button>
                                 </div>
                                 <span className="text-gray-300">pts</span>

@@ -26,12 +26,13 @@ const gameInstructions = {
     '🏆 <strong>Winning:</strong> Player or Team with the highest score wins!'
   ],
   'team-relay-shootout': [
-    '🏃 <strong>Objective:</strong> Work as a team to complete shooting challenges in relay format',
-    '👥 <strong>Team Setup:</strong> Each team lines up behind their designated shooting area',
-    '⚽ <strong>How to Play:</strong> Players take turns shooting at targets in sequence',
-    '🔄 <strong>Relay Rules:</strong> Next teammate can only shoot after previous player hits their target',
-    '⏰ <strong>Time Pressure:</strong> Complete all targets before time runs out',
-    '🏆 <strong>Winning:</strong> First team to complete all relay challenges wins!'
+    '🎯 <strong>Objective:</strong> Score the most points by shooting into your team color zones and getting points when opponents miss.',
+    '👥 <strong>Team Setup:</strong> 2-4 teams rotate taking shots with their team color balls at the colored target zones.',
+    '⚽ <strong>How to Play:</strong> Players rotate from each team, shooting their team color balls at any colored target zones during the 5-minute game timer.',
+    '🎲 <strong>Scoring:</strong> Get 3 points for scoring in your team color zones, get 1 point when opponents accidentally score in your color zones.',
+    '🔄 <strong>Team Colors:</strong> Each team is assigned 3 colored target zones on the purple scoring grid - aim for your team colors!',
+    '⏰ <strong>Time Limit:</strong> Single 5-minute game with all teams playing simultaneously.',
+    '🏆 <strong>Winning:</strong> Team with the highest total score wins!'
   ]
 };
 
