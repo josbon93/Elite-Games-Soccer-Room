@@ -395,23 +395,46 @@ export default function GameStart() {
                 Scoring Zones
               </h2>
               <div className="max-w-lg mx-auto mb-6">
-                <div className="grid grid-cols-5 gap-1">
-                  {scoringGrid.flat().map((score, index) => (
-                    <motion.div
-                      key={index}
-                      className={`h-16 flex items-center justify-center text-xl font-bold rounded border-2 border-black cursor-pointer transition-all ${
-                        score > 0 
-                          ? score >= 50 ? 'bg-purple-600 text-white hover:bg-purple-500' 
-                            : score >= 25 ? 'bg-purple-500 text-white hover:bg-purple-400'
-                            : 'bg-purple-400 text-white hover:bg-purple-300'
-                          : 'bg-purple-800 text-red-300 hover:bg-purple-700'
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {score > 0 ? `+${score}` : score}
-                    </motion.div>
-                  ))}
+                {/* Soccer Goal Frame */}
+                <div className="relative bg-white p-4 rounded-lg">
+                  {/* Goal Posts */}
+                  <div className="absolute left-0 top-4 bottom-4 w-3 bg-white rounded-l"></div>
+                  <div className="absolute right-0 top-4 bottom-4 w-3 bg-white rounded-r"></div>
+                  {/* Crossbar */}
+                  <div className="absolute top-0 left-0 right-0 h-3 bg-white rounded-t"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-3 bg-white rounded-b"></div>
+                  
+                  {/* Net Pattern */}
+                  <div className="absolute inset-3 pointer-events-none opacity-30">
+                    <svg className="w-full h-full" viewBox="0 0 100 100">
+                      <defs>
+                        <pattern id="goalNet" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+                          <path d="M 0 0 L 8 0 M 0 0 L 0 8" stroke="#666" strokeWidth="0.5" fill="none"/>
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#goalNet)"/>
+                    </svg>
+                  </div>
+
+                  {/* Scoring Grid */}
+                  <div className="grid grid-cols-5 gap-1 relative z-10">
+                    {scoringGrid.flat().map((score, index) => (
+                      <motion.div
+                        key={index}
+                        className={`h-16 flex items-center justify-center text-xl font-bold rounded border-2 border-black cursor-pointer transition-all ${
+                          score > 0 
+                            ? score >= 50 ? 'bg-purple-600 text-white hover:bg-purple-500' 
+                              : score >= 25 ? 'bg-purple-500 text-white hover:bg-purple-400'
+                              : 'bg-purple-400 text-white hover:bg-purple-300'
+                            : 'bg-purple-800 text-red-300 hover:bg-purple-700'
+                        }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {score > 0 ? `+${score}` : score}
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -571,10 +594,12 @@ export default function GameStart() {
                 {!scoresSubmitted ? (
                   <Button
                     onClick={submitRoundScores}
-                    className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3"
-                    disabled={isRoundActive}
+                    className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3 disabled:bg-gray-500 disabled:text-gray-300"
+                    disabled={isRoundActive || !roundComplete}
                   >
-                    Submit Round {currentRound} Scores
+                    {isRoundActive ? `Round ${currentRound} In Progress...` : 
+                     !roundComplete ? `Round ${currentRound} Timer Not Started` :
+                     `Submit Round ${currentRound} Scores`}
                   </Button>
                 ) : (
                   <div className="space-y-3">
