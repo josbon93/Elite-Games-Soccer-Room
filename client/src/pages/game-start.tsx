@@ -396,26 +396,14 @@ export default function GameStart() {
               </h2>
               <div className="max-w-lg mx-auto mb-6">
                 {/* Soccer Goal Frame */}
-                <div className="relative bg-white p-4 rounded-lg">
-                  {/* Goal Posts */}
-                  <div className="absolute left-0 top-4 bottom-4 w-3 bg-white rounded-l"></div>
-                  <div className="absolute right-0 top-4 bottom-4 w-3 bg-white rounded-r"></div>
-                  {/* Crossbar */}
-                  <div className="absolute top-0 left-0 right-0 h-3 bg-white rounded-t"></div>
-                  <div className="absolute bottom-0 left-0 right-0 h-3 bg-white rounded-b"></div>
+                <div className="relative p-6 bg-black">
+                  {/* Left Goal Post */}
+                  <div className="absolute left-0 top-0 bottom-0 w-6 bg-white"></div>
+                  {/* Right Goal Post */}
+                  <div className="absolute right-0 top-0 bottom-0 w-6 bg-white"></div>
+                  {/* Top Crossbar */}
+                  <div className="absolute top-0 left-0 right-0 h-6 bg-white"></div>
                   
-                  {/* Net Pattern */}
-                  <div className="absolute inset-3 pointer-events-none opacity-30">
-                    <svg className="w-full h-full" viewBox="0 0 100 100">
-                      <defs>
-                        <pattern id="goalNet" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-                          <path d="M 0 0 L 8 0 M 0 0 L 0 8" stroke="#666" strokeWidth="0.5" fill="none"/>
-                        </pattern>
-                      </defs>
-                      <rect width="100%" height="100%" fill="url(#goalNet)"/>
-                    </svg>
-                  </div>
-
                   {/* Scoring Grid */}
                   <div className="grid grid-cols-5 gap-1 relative z-10">
                     {scoringGrid.flat().map((score, index) => (
