@@ -9,12 +9,12 @@ interface HowToPlayModalProps {
 
 const gameInstructions = {
   'soccer-skeeball': [
-    '🎯 <strong>Objective:</strong> Roll soccer balls up the ramp to score points in target holes',
-    '🏃 <strong>Setup:</strong> Stand behind the throwing line and grab a soccer ball',
-    '⚽ <strong>How to Play:</strong> Roll the ball up the ramp with enough force to reach the scoring holes',
-    '🎲 <strong>Scoring:</strong> Different holes award different points - aim for the highest value!',
-    '⏰ <strong>Time Limit:</strong> You have 60 seconds to score as many points as possible',
-    '🏆 <strong>Winning:</strong> Player with the highest score wins!'
+    '🎯 <strong>Objective:</strong> Kick as many balls at the target zones in the goal within the 45 second round timer',
+    '🏃 <strong>Setup:</strong> Gather 10 balls of the same color and have it ready behind the shooting line',
+    '⚽ <strong>How to Play:</strong> Kick the 10 balls, one at a time towards the target zones in the goal before the 45 second round timer ends, if playing on teams, both players play the round at the same time.',
+    '🎲 <strong>Scoring:</strong> Follow the points system based off the purple grid on the game application to add up all the points from the balls that made into a target zone',
+    '⏰ <strong>Time Limit:</strong> Whether on teams or individuals, you have 45 seconds or 10 shots to score as many points as possible.',
+    '🏆 <strong>Winning:</strong> Player or Team with the highest score wins!'
   ],
   'elite-shooter': [
     '🎯 <strong>Objective:</strong> Hit as many targets as possible within the time limit',
