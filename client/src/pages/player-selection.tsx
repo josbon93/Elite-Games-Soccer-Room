@@ -23,18 +23,30 @@ export default function PlayerSelection() {
   const [selectedCount, setSelectedCount] = useState(0);
 
   // Parse URL params
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const urlParts = location.split('?');
+  const queryString = urlParts.length > 1 ? urlParts[1] : '';
+  const urlParams = new URLSearchParams(queryString);
   const modeFromUrl = urlParams.get('mode') as 'individual' | 'team' | null;
+  
+  console.log('Current location:', location);
+  console.log('Query string:', queryString);
+  console.log('Parsed mode from URL:', modeFromUrl);
 
   useEffect(() => {
+    console.log('PlayerSelection useEffect - currentGame:', currentGame);
+    console.log('PlayerSelection useEffect - modeFromUrl:', modeFromUrl);
+    console.log('PlayerSelection useEffect - currentMode:', currentMode);
+    
     // Redirect to home if no game selected
     if (!currentGame) {
+      console.log('No current game, redirecting to home');
       setLocation('/');
       return;
     }
 
     // Set mode from URL if provided
     if (modeFromUrl && modeFromUrl !== currentMode) {
+      console.log('Setting mode from URL:', modeFromUrl);
       setCurrentMode(modeFromUrl);
     }
   }, [currentGame, modeFromUrl, currentMode, setCurrentMode, setLocation]);

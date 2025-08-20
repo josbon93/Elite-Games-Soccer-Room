@@ -18,9 +18,11 @@ export default function Home() {
   });
 
   const handleSelectGame = (game: Game) => {
+    console.log('Selected game:', game);
     setCurrentGame(game);
     // Handle Team Relay Shootout (teams only)
     if (game.type === 'team-relay-shootout') {
+      console.log('Navigating to team selection for Team Relay Shootout');
       setLocation('/player-selection?mode=team');
     } else {
       setLocation('/game-mode');
