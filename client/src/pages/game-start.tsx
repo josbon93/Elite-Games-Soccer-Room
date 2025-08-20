@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface PlayerScore {
   playerId: number;
@@ -41,6 +42,9 @@ export default function GameStart() {
   const [isTotalTimerActive, setIsTotalTimerActive] = useState(false);
   const [totalRounds, setTotalRounds] = useState(4);
   const [activeParticipants, setActiveParticipants] = useState<number[]>([]);
+  const [roundComplete, setRoundComplete] = useState(false);
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [scoresSubmitted, setScoresSubmitted] = useState(false);
   
   // Score state
   const [playerScores, setPlayerScores] = useState<PlayerScore[]>([]);
@@ -136,30 +140,15 @@ export default function GameStart() {
         setRoundTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (isRoundActive && roundTimeLeft === 0) {
-      // Round finished
+      // Round time finished - stop timer but don't auto-advance
       setIsRoundActive(false);
-      if (currentRound < totalRounds) {
-        // Auto-advance to next round after 2 seconds
-        setTimeout(() => {
-          const { participantsPerRound } = calculateGameStructure();
-          setCurrentRound(prev => prev + 1);
-          setRoundTimeLeft(45);
-          // Set active participants for next round
-          if (participantsPerRound[currentRound]) {
-            setActiveParticipants(participantsPerRound[currentRound]);
-          }
-        }, 2000);
-      } else {
-        // Game finished
-        setGamePhase('finished');
-        setIsTotalTimerActive(false);
-      }
+      setRoundComplete(true);
     }
 
     return () => {
       if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
     };
-  }, [isRoundActive, roundTimeLeft, currentRound, totalRounds]);
+  }, [isRoundActive, roundTimeLeft]);
 
   useEffect(() => {
     if (isTotalTimerActive && totalTimeLeft > 0) {
@@ -167,10 +156,10 @@ export default function GameStart() {
         setTotalTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (isTotalTimerActive && totalTimeLeft === 0) {
-      // Total time expired
-      setGamePhase('finished');
+      // Total time expired - show modal but don't end game yet
       setIsRoundActive(false);
       setIsTotalTimerActive(false);
+      setShowGameOverModal(true);
     }
 
     return () => {
@@ -196,6 +185,13 @@ export default function GameStart() {
   const handleScoreInput = (playerId: number, value: string) => {
     const key = `${playerId}-${currentRound}`;
     setTempScores(prev => ({ ...prev, [key]: value }));
+  };
+
+  const incrementScore = (playerId: number, increment: number) => {
+    const key = `${playerId}-${currentRound}`;
+    const currentValue = parseInt(tempScores[key] || '0');
+    const newValue = Math.max(0, currentValue + increment);
+    setTempScores(prev => ({ ...prev, [key]: newValue.toString() }));
   };
 
   const submitRoundScores = () => {
@@ -239,6 +235,30 @@ export default function GameStart() {
       });
     }
     setTempScores(newTempScores);
+    setScoresSubmitted(true);
+  };
+
+  const startNextRound = () => {
+    if (currentRound < totalRounds) {
+      const { participantsPerRound } = calculateGameStructure();
+      setCurrentRound(prev => prev + 1);
+      setRoundTimeLeft(45);
+      setRoundComplete(false);
+      setScoresSubmitted(false);
+      // Set active participants for next round
+      if (participantsPerRound[currentRound]) {
+        setActiveParticipants(participantsPerRound[currentRound]);
+      }
+    } else {
+      // All rounds complete
+      setGamePhase('finished');
+      setIsTotalTimerActive(false);
+    }
+  };
+
+  const exitGame = () => {
+    resetGameState();
+    setLocation('/');
   };
 
   if (!currentSession || !currentGame) return null;
@@ -460,13 +480,31 @@ export default function GameStart() {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <span className="text-white">Round {currentRound}:</span>
-                                <Input
-                                  type="number"
-                                  value={tempScores[`${player.playerId}-${currentRound}`] || ''}
-                                  onChange={(e) => handleScoreInput(player.playerId, e.target.value)}
-                                  className="w-20 text-center"
-                                  placeholder="0"
-                                />
+                                <div className="flex items-center space-x-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-8 h-8 p-0"
+                                    onClick={() => incrementScore(player.playerId, -5)}
+                                  >
+                                    -5
+                                  </Button>
+                                  <Input
+                                    type="number"
+                                    value={tempScores[`${player.playerId}-${currentRound}`] || ''}
+                                    onChange={(e) => handleScoreInput(player.playerId, e.target.value)}
+                                    className="w-16 text-center"
+                                    placeholder="0"
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-8 h-8 p-0"
+                                    onClick={() => incrementScore(player.playerId, 5)}
+                                  >
+                                    +5
+                                  </Button>
+                                </div>
                                 <span className="text-gray-300">pts</span>
                               </div>
                             </div>
@@ -488,13 +526,31 @@ export default function GameStart() {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <span className="text-white">Round {currentRound}:</span>
-                                <Input
-                                  type="number"
-                                  value={tempScores[`${team.teamId}-${currentRound}`] || ''}
-                                  onChange={(e) => handleScoreInput(team.teamId, e.target.value)}
-                                  className="w-20 text-center"
-                                  placeholder="0"
-                                />
+                                <div className="flex items-center space-x-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-8 h-8 p-0"
+                                    onClick={() => incrementScore(team.teamId, -5)}
+                                  >
+                                    -5
+                                  </Button>
+                                  <Input
+                                    type="number"
+                                    value={tempScores[`${team.teamId}-${currentRound}`] || ''}
+                                    onChange={(e) => handleScoreInput(team.teamId, e.target.value)}
+                                    className="w-16 text-center"
+                                    placeholder="0"
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-8 h-8 p-0"
+                                    onClick={() => incrementScore(team.teamId, 5)}
+                                  >
+                                    +5
+                                  </Button>
+                                </div>
                                 <span className="text-gray-300">pts</span>
                               </div>
                             </div>
@@ -504,18 +560,77 @@ export default function GameStart() {
                 }
               </div>
 
-              <div className="mt-6 text-center">
-                <Button
-                  onClick={submitRoundScores}
-                  className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3"
-                  disabled={isRoundActive}
-                >
-                  Submit Round {currentRound} Scores
-                </Button>
+              <div className="mt-6 text-center space-y-3">
+                {!scoresSubmitted ? (
+                  <Button
+                    onClick={submitRoundScores}
+                    className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3"
+                    disabled={isRoundActive}
+                  >
+                    Submit Round {currentRound} Scores
+                  </Button>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="text-green-400 font-bold">
+                      <i className="fas fa-check mr-2"></i>
+                      Round {currentRound} Scores Submitted!
+                    </div>
+                    {currentRound < totalRounds && (
+                      <Button
+                        onClick={startNextRound}
+                        className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3"
+                      >
+                        <i className="fas fa-play mr-2"></i>
+                        Start Round {currentRound + 1}
+                      </Button>
+                    )}
+                    {currentRound >= totalRounds && (
+                      <Button
+                        onClick={() => setGamePhase('finished')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3"
+                      >
+                        <i className="fas fa-trophy mr-2"></i>
+                        View Final Results
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+
+        {/* Game Over Modal */}
+        <Dialog open={showGameOverModal} onOpenChange={() => {}}>
+          <DialogContent className="sm:max-w-md bg-gray-800 border-gray-600">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-red-400 text-center">
+                <i className="fas fa-clock mr-2"></i>
+                Game Over!
+              </DialogTitle>
+            </DialogHeader>
+            <div className="text-center py-4">
+              <p className="text-gray-300 text-lg mb-6">
+                5-minute timer has expired. Please finish adding scores and exit the game.
+              </p>
+              <div className="space-y-3">
+                <Button
+                  onClick={() => setShowGameOverModal(false)}
+                  className="bg-elite-gold hover:bg-yellow-600 text-black font-bold px-6 py-3 w-full"
+                >
+                  Continue Adding Scores
+                </Button>
+                <Button
+                  onClick={exitGame}
+                  variant="outline"
+                  className="border-gray-500 text-gray-300 hover:bg-gray-700 px-6 py-3 w-full"
+                >
+                  Exit Game Now
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
