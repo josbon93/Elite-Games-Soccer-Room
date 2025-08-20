@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { InsertGameSession } from '@shared/schema';
+import { AdminReset } from '@/components/admin-reset';
 
 export default function PlayerSelection() {
   const [location, setLocation] = useLocation();
@@ -240,6 +241,9 @@ export default function PlayerSelection() {
           )}
         </div>
       </div>
+
+      {/* Admin Reset */}
+      <AdminReset />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { useGameStore } from '@/lib/game-store';
 import { useEffect } from 'react';
+import { AdminReset } from '@/components/admin-reset';
 
 export default function GameMode() {
   const [, setLocation] = useLocation();
@@ -95,6 +96,9 @@ export default function GameMode() {
           </motion.div>
         </div>
       </div>
+
+      {/* Admin Reset */}
+      <AdminReset />
     </div>
   );
 }

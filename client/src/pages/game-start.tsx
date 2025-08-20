@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { AdminReset } from '@/components/admin-reset';
 
 interface PlayerScore {
   playerId: number;
@@ -641,6 +642,9 @@ export default function GameStart() {
             </motion.div>
           </div>
         )}
+
+        {/* Admin Reset */}
+        <AdminReset />
       </div>
     );
   }

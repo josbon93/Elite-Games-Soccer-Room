@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
+import { AdminReset } from '@/components/admin-reset';
 
 export default function NotFound() {
   return (
@@ -16,6 +17,9 @@ export default function NotFound() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Admin Reset */}
+      <AdminReset />
     </div>
   );
 }

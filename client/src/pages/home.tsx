@@ -6,6 +6,7 @@ import type { Game } from '@shared/schema';
 import EliteLogo from '@/components/elite-logo';
 import GameCard from '@/components/game-card';
 import HowToPlayModal from '@/components/how-to-play-modal';
+import { AdminReset } from '@/components/admin-reset';
 import { useState } from 'react';
 
 export default function Home() {
@@ -106,6 +107,9 @@ export default function Home() {
         isOpen={!!modalGame}
         onClose={() => setModalGame(null)}
       />
+
+      {/* Admin Reset */}
+      <AdminReset />
     </div>
   );
 }
