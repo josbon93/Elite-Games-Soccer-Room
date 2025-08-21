@@ -45,50 +45,57 @@ export default function HowToPlayModal({ game, isOpen, onClose }: HowToPlayModal
     <AnimatePresence>
       {isOpen && (
         <motion.div 
-          className="fixed inset-0 modal-backdrop flex items-center justify-center z-50"
+          className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4"
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div 
-            className="bg-elite-black rounded-2xl p-8 max-w-2xl mx-4 border-2 border-elite-gold"
+            className="bg-elite-black rounded-2xl border-2 border-elite-gold w-full max-w-4xl max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
             initial={{ opacity: 0, y: 100, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-3xl font-bold text-elite-gold">
+            {/* Header - Fixed */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-700 flex-shrink-0">
+              <h3 className="text-2xl md:text-3xl font-bold text-elite-gold">
                 How to Play: {game.name}
               </h3>
               <motion.button 
                 onClick={onClose}
-                className="text-gray-400 hover:text-white text-2xl"
+                className="text-gray-400 hover:text-white text-2xl flex-shrink-0 ml-4"
                 whileHover={{ rotate: 90 }}
                 transition={{ duration: 0.2 }}
               >
                 <i className="fas fa-times"></i>
               </motion.button>
             </div>
-            <div className="text-gray-300 text-lg leading-relaxed space-y-4">
-              {instructions.map((instruction, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-start space-x-3 p-4 bg-gray-800 rounded-lg"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div 
-                    className="text-elite-gold"
-                    dangerouslySetInnerHTML={{ __html: instruction }}
-                  />
-                </motion.div>
-              ))}
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="text-gray-300 text-base md:text-lg leading-relaxed space-y-4">
+                {instructions.map((instruction, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex items-start space-x-3 p-4 bg-gray-800 rounded-lg"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <div 
+                      className="text-elite-gold leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: instruction }}
+                    />
+                  </motion.div>
+                ))}
+              </div>
             </div>
-            <div className="mt-8 text-center">
+            
+            {/* Footer - Fixed */}
+            <div className="p-6 border-t border-gray-700 text-center flex-shrink-0">
               <motion.button 
                 onClick={onClose}
                 className="bg-elite-gold text-black px-8 py-3 rounded-xl font-bold text-lg hover:bg-elite-gold-dark transition-colors duration-200"
